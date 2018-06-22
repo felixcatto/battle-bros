@@ -1,8 +1,12 @@
-const outputStats = (armor, helm, canShowLogs) => {
+const outputStats = (armor, helm, hp, canShowLogs) => {
   if (!canShowLogs) return;
   console.log(`armor: ${armor}`);
   console.log(`helm: ${helm}`);
+  console.log(`hp: ${hp}`);
 };
+
+
+const getRandomInRange = (start, end) => Math.floor(Math.random() * (end - start + 1) + start);
 
 
 const getHitsToDie = (options) => {
@@ -15,27 +19,59 @@ const getHitsToDie = (options) => {
     canShowLogs,
   } = options;
 
-  const makeHit = (armor, helm, numOfHit) => {
+  const makeHit = (armor, helm, hp, numOfHit) => {
     const chance = getRandomNum();
 
     if (chance >= 0.75) {
+      if (helm === 0) {
+        const newHp = hp - dmgPerHit;
+        if (newHp <= 0) {
+          outputStats(armor, helm, newHp, canShowLogs);
+          return numOfHit;
+        }
+        return makeHit(armor, helm, newHp, numOfHit + 1);
+      }
+
       const newHelm = helm - dmgPerHit;
       if (newHelm <= 0) {
-        outputStats(armor, newHelm, canShowLogs);
-        return numOfHit;
+        const newHp = hp + newHelm;
+        if (newHp <= 0) {
+          outputStats(armor, 0, newHp, canShowLogs);
+          return numOfHit;
+        }
+        return makeHit(armor, 0, newHp, numOfHit + 1);
       }
-      return makeHit(armor, newHelm, numOfHit + 1);
+
+      return makeHit(armor, newHelm, hp, numOfHit + 1);
     }
 
-    const newArmor = armor - dmgPerHit;
-    if (newArmor <= 0) {
-      outputStats(newArmor, helm, canShowLogs);
-      return numOfHit;
+    if (chance < 0.75) {
+      if (armor === 0) {
+        const newHp = hp - dmgPerHit;
+        if (newHp <= 0) {
+          outputStats(armor, helm, newHp, canShowLogs);
+          return numOfHit;
+        }
+        return makeHit(armor, helm, newHp, numOfHit + 1);
+      }
+
+      const newArmor = armor - dmgPerHit;
+      if (newArmor <= 0) {
+        const newHp = hp + newArmor;
+        if (newHp <= 0) {
+          outputStats(0, helm, newHp, canShowLogs);
+          return numOfHit;
+        }
+        return makeHit(0, helm, newHp, numOfHit + 1);
+      }
+
+      return makeHit(newArmor, helm, hp, numOfHit + 1);
     }
-    return makeHit(newArmor, helm, numOfHit + 1);
+
+    throw new Error('impossible');
   };
 
-  return makeHit(startArmor, startHelm, 1);
+  return makeHit(startArmor, startHelm, startHp, 1);
 };
 
 
