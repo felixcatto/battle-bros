@@ -1,0 +1,33 @@
+{
+  "name": "battle-bros",
+  "version": "1.0.0",
+  "description": "privet medved",
+  "main": "index.js",
+  "scripts": {
+    "babel-node": "babel-node",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "eslint": "eslint",
+    "jest": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felixcatto/battle-bros.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/felixcatto/battle-bros/issues"
+  },
+  "homepage": "https://github.com/felixcatto/battle-bros#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.3",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.12.0",
+    "jest": "^23.1.0"
+  }
+}
