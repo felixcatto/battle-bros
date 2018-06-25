@@ -9,7 +9,49 @@ const outputStats = (armor, helm, hp, canShowLogs) => {
 const getRandomInRange = (start, end) => Math.floor(Math.random() * (end - start + 1) + start);
 
 
-const getHitsToDie = (options) => {
+const getStatsAfterHit = (struckArmorPart, hp, dmg) => {
+  if (struckArmorPart === 0) {
+    const newHp = hp - dmg;
+    if (newHp <= 0) {
+      return {
+        struckArmorPart: 0,
+        hp: 0,
+        ehp: hp,
+      };
+    }
+    return {
+      struckArmorPart: 0,
+      hp: newHp,
+      ehp: dmg,
+    };
+  }
+
+  const newArmor = struckArmorPart - dmg;
+  if (newArmor <= 0) {
+    const newHp = hp - Math.abs(newArmor);
+    if (newHp <= 0) {
+      return {
+        struckArmorPart: 0,
+        hp: 0,
+        ehp: hp + struckArmorPart,
+      };
+    }
+    return {
+      struckArmorPart: 0,
+      hp: newHp,
+      ehp: dmg,
+    };
+  }
+
+  return {
+    struckArmorPart: newArmor,
+    hp,
+    ehp: dmg,
+  };
+};
+
+
+const getEHP = (options) => {
   const {
     startHp,
     startArmor,
@@ -19,73 +61,42 @@ const getHitsToDie = (options) => {
     canShowLogs,
   } = options;
 
-  const makeHit = (armor, helm, hp, numOfHit) => {
+  const makeHit = (armor, helm, hp, totalEHP) => {
     const chance = getRandomNum();
 
     if (chance >= 0.75) {
-      if (helm === 0) {
-        const newHp = hp - dmgPerHit;
-        if (newHp <= 0) {
-          outputStats(armor, helm, newHp, canShowLogs);
-          return numOfHit;
-        }
-        return makeHit(armor, helm, newHp, numOfHit + 1);
+      const afterHit = getStatsAfterHit(helm, hp, dmgPerHit);
+      const newTotalEHP = totalEHP + afterHit.ehp;
+      if (afterHit.hp === 0) {
+        return newTotalEHP;
       }
 
-      const newHelm = helm - dmgPerHit;
-      if (newHelm <= 0) {
-        const newHp = hp + newHelm;
-        if (newHp <= 0) {
-          outputStats(armor, 0, newHp, canShowLogs);
-          return numOfHit;
-        }
-        return makeHit(armor, 0, newHp, numOfHit + 1);
-      }
-
-      return makeHit(armor, newHelm, hp, numOfHit + 1);
+      return makeHit(armor, afterHit.struckArmorPart, afterHit.hp, newTotalEHP);
     }
 
     if (chance < 0.75) {
-      if (armor === 0) {
-        const newHp = hp - dmgPerHit;
-        if (newHp <= 0) {
-          outputStats(armor, helm, newHp, canShowLogs);
-          return numOfHit;
-        }
-        return makeHit(armor, helm, newHp, numOfHit + 1);
+      const afterHit = getStatsAfterHit(armor, hp, dmgPerHit);
+      const newTotalEHP = totalEHP + afterHit.ehp;
+      if (afterHit.hp === 0) {
+        return newTotalEHP;
       }
 
-      const newArmor = armor - dmgPerHit;
-      if (newArmor <= 0) {
-        const newHp = hp + newArmor;
-        if (newHp <= 0) {
-          outputStats(0, helm, newHp, canShowLogs);
-          return numOfHit;
-        }
-        return makeHit(0, helm, newHp, numOfHit + 1);
-      }
-
-      return makeHit(newArmor, helm, hp, numOfHit + 1);
+      return makeHit(afterHit.struckArmorPart, helm, afterHit.hp, newTotalEHP);
     }
-
-    throw new Error('impossible');
   };
 
-  return makeHit(startArmor, startHelm, startHp, 1);
+  return makeHit(startArmor, startHelm, startHp, 0);
 };
 
 
-const getEHP = (options) => {
-  const {
-    countOfTests = 100000,
-    dmgPerHit = 60,
-  } = options;
+const getAverageEHP = (options) => {
+  const { countOfTests = 100000 } = options;
 
-  const sumOfHits = [...Array(countOfTests).keys()]
-    .map(() => getHitsToDie(options))
+  const sumOfEHP = [...Array(countOfTests).keys()]
+    .map(() => getEHP(options))
     .reduce((acc, num) => acc + num, 0);
-  return (sumOfHits / countOfTests) * dmgPerHit;
+  return sumOfEHP / countOfTests;
 };
 
 
-export { getHitsToDie, getEHP };
+export { getAverageEHP };

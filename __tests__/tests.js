@@ -1,6 +1,5 @@
 import {
-  getHitsToDie,
-  getEHP,
+  getAverageEHP,
 } from '../src';
 
 
@@ -32,7 +31,7 @@ test('ehp are match', () => {
     let i = 0;
     return () => {
       i += 1;
-      return i % 4 === 0 ? 1 : 0; // 0 0 0 1...
+      return i % 4 === 0 ? 1 : 0; // armor armor armor helm...
     };
   };
 
@@ -41,16 +40,17 @@ test('ehp are match', () => {
     startArmor: 300,
     startHelm: 300,
     dmgPerHit: 60,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-    canShowLogs: true,
+    // getRandomNum: getRandomFunc(),
+    // countOfTests: 1,
+    // canShowLogs: true,
   };
 
-  const ehp = getEHP(options);
+  const ehp = getAverageEHP(options);
   console.log(ehp);
-  // 5 hits -> armor
-  // 1 hit -> helm
-  // 1 hit -> hp
-  expect(ehp).toBe(420); // 7 hits * 60 dmgPerHit
+  // 5 hits -> armor => 300
+  // 1 hit -> helm => 60
+  // 1 hit -> hp => 55
+  // => 415
+  expect(ehp).toBe(415);
   // expect(1).toBe(1);
 });
