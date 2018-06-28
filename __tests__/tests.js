@@ -12,51 +12,65 @@ const getRandomFunc = () => {
 };
 
 
-// test('simple ehp test', () => {
-//   const options = {
-//     startHp: 60,
-//     startArmor: 220,
-//     startHelm: 220,
-//     dmgPerHit: 60,
-//     armorPiercingPercent: 0.3,
-//     getRandomNum: getRandomFunc(),
-//     countOfTests: 1,
-//   };
-
-//   const ehp = getAverageEHP(options);
-//   console.log(ehp);
-//   expect(ehp).toBe(302);
-// });
-
-
-// test('simple ehp test', () => {
-//   const options = {
-//     startHp: 55,
-//     startArmor: 220,
-//     startHelm: 220,
-//     dmgPerHit: 60,
-//     armorPiercingPercent: 0.3,
-//     getRandomNum: getRandomFunc(),
-//     countOfTests: 1,
-//   };
-
-//   const ehp = getAverageEHP(options);
-//   console.log(ehp);
-//   expect(ehp).toBe(297);
-// });
-
-
-test('average ehp test', () => {
+test('simple ehp test', () => {
   const options = {
-    startHp: 55,
-    startArmor: 300,
-    startHelm: 300,
+    startHp: 60,
+    startArmor: 220,
+    startHelm: 220,
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
-    // getRandomNum: getRandomFunc(),
-    // countOfTests: 1,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
   };
 
   const ehp = getAverageEHP(options);
-  console.log(ehp);
+  expect(ehp).toBe(302);
+});
+
+
+test('simple ehp test', () => {
+  const options = {
+    startHp: 55,
+    startArmor: 220,
+    startHelm: 220,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(297);
+});
+
+
+test('low hp', () => {
+  const options = {
+    startHp: 2,
+    startArmor: 220,
+    startHelm: 220,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(60);
+});
+
+
+test('low hp', () => {
+  const options = {
+    startHp: 1,
+    startArmor: 220,
+    startHelm: 220,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(57);
 });

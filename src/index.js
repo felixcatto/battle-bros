@@ -1,23 +1,29 @@
-const getStatsAfterHit = (struckArmorPart, hp, dmg, APRPercent) => {
+const getStatsAfterHit = (struckArmorPart, oppositeArmorPart, hp, options) => {
+  const {
+    dmgPerHit: dmg,
+    armorPiercingPercent: APRPercent,
+    hasBattleForged,
+  } = options;
+
+  if (hasBattleForged) {
+    const BFPercent = (struckArmorPart + oppositeArmorPart) * 0.05 * 0.01;
+    console.log(BFPercent);
+  }
+
   const newArmor = Math.max(struckArmorPart - dmg, 0);
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const armorOverkill = Math.abs(Math.min(struckArmorPart - dmg, 0));
-  const APRDmg = Math.max(Math.min(struckArmorPart, dmg) * APRPercent - newArmorDmgReduction, 0);
-  const newHp = hp - (APRDmg + armorOverkill);
+  const maxArmorDmg = Math.min(struckArmorPart, dmg);
+  const armorDmg = Math.min(maxArmorDmg, Math.ceil((hp + newArmorDmgReduction) / APRPercent));
+  const APRDmg = Math.max(Math.floor(armorDmg * APRPercent) - newArmorDmgReduction, 0);
+  const armorOverkill = Math.min(hp - APRDmg, Math.abs(Math.min(struckArmorPart - dmg, 0)));
+  const newHp = hp - APRDmg - armorOverkill;
 
-  if (newArmor === 0) {
-    if (newHp <= 0) {
-      return {
-        struckArmorPart: 0,
-        hp: 0,
-        ehp: hp - APRDmg + struckArmorPart,
-      };
-    }
+  if (newHp === 0) {
     return {
-      struckArmorPart: 0,
+      struckArmorPart: newArmor,
       hp: newHp,
-      ehp: dmg,
+      ehp: armorDmg + armorOverkill,
     };
   }
 
@@ -34,8 +40,6 @@ const getEHP = (options) => {
     startHp,
     startArmor,
     startHelm,
-    dmgPerHit,
-    armorPiercingPercent: APRPercent,
     getRandomNum = Math.random,
   } = options;
 
@@ -43,7 +47,7 @@ const getEHP = (options) => {
     const chance = getRandomNum();
 
     if (chance >= 0.75) {
-      const afterHit = getStatsAfterHit(helm, hp, dmgPerHit, APRPercent);
+      const afterHit = getStatsAfterHit(helm, armor, hp, options);
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
         return newTotalEHP;
@@ -53,7 +57,7 @@ const getEHP = (options) => {
     }
 
     if (chance < 0.75) {
-      const afterHit = getStatsAfterHit(armor, hp, dmgPerHit, APRPercent);
+      const afterHit = getStatsAfterHit(armor, helm, hp, options);
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
         return newTotalEHP;
@@ -68,7 +72,7 @@ const getEHP = (options) => {
 
 
 const getAverageEHP = (options) => {
-  const { countOfTests = 100000 } = options;
+  const { countOfTests = 50000 } = options;
 
   const sumOfEHP = [...Array(countOfTests).keys()]
     .map(() => getEHP(options))
