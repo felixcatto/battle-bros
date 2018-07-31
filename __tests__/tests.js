@@ -76,11 +76,11 @@ test('low hp (steelbrow)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(57);
+  expect(ehp).toBe(58);
 });
 
 
-test('simple ehp test', () => {
+test('simple ehp test (noPerk)', () => {
   const options = {
     startHp: 60,
     startArmor: 220,
@@ -96,25 +96,23 @@ test('simple ehp test', () => {
 });
 
 
-// test('little bug :(', () => {
-//   const options = {
-//     startHp: 60,
-//     startArmor: 160,
-//     startHelm: 160,
-//     dmgPerHit: 60,
-//     armorPiercingPercent: 0.3,
-//     getRandomNum: getRandomFunc(),
-//     countOfTests: 1,
-//   };
+test('head test (noPerk)', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 160,
+    startHelm: 160,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
 
-//   const ehp = getAverageEHP(options);
-//   // in reality we need to receive 40 dmg, but due to bug with armor reduction we get 36
-//   // i don't know how to calculate it properly :(
-//   expect(ehp).toBe(220);
-// });
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(221);
+});
 
 
-test('head overkill', () => {
+test('head overkill (noPerk)', () => {
   const options = {
     startHp: 80,
     startArmor: 160,
