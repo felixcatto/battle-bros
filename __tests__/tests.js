@@ -126,3 +126,36 @@ test('head overkill (noPerk)', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(212);
 });
+
+
+test('(Battle Forged)', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 200,
+    startHelm: 200,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    hasBattleForged: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(321);
+});
+
+test('(Battle Forged)', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 220,
+    startHelm: 200,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    hasBattleForged: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(348);
+});
