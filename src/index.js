@@ -6,9 +6,11 @@ const getEHP = (options) => {
     startHp,
     startArmor,
     startHelm,
-    getRandomNum = Math.random,
     dmgPerHit,
     armorPiercingPercent,
+    totalFtg,
+    getRandomNum = Math.random,
+    nimbleRandomFunc = Math.random,
   } = options;
 
   const getStatsAfterHit = configureStatsAfterHit(options);
@@ -17,7 +19,17 @@ const getEHP = (options) => {
     const chance = getRandomNum();
 
     if (chance >= 0.75) {
-      const afterHit = getStatsAfterHit(helm, armor, hp, 'head', dmgPerHit, armorPiercingPercent);
+      const afterHit = getStatsAfterHit({
+        struckArmorPart: helm,
+        oppositeArmorPart: armor,
+        hp,
+        struckPartName: 'head',
+        dmg: dmgPerHit,
+        APRPercent: armorPiercingPercent,
+        totalFtg,
+        nimbleRandomFunc,
+      });
+
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
         return newTotalEHP;
@@ -27,7 +39,17 @@ const getEHP = (options) => {
     }
 
     if (chance < 0.75) {
-      const afterHit = getStatsAfterHit(armor, helm, hp, 'body', dmgPerHit, armorPiercingPercent);
+      const afterHit = getStatsAfterHit({
+        struckArmorPart: armor,
+        oppositeArmorPart: helm,
+        hp,
+        struckPartName: 'body',
+        dmg: dmgPerHit,
+        APRPercent: armorPiercingPercent,
+        totalFtg,
+        nimbleRandomFunc,
+      });
+
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
         return newTotalEHP;

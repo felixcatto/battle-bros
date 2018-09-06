@@ -159,3 +159,21 @@ test('(Battle Forged)', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(348);
 });
+
+test('(Nimble)', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 80,
+    startHelm: 80,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    hasNimble: true,
+    totalFtg: 13,
+    nimbleRandomFunc: getRandomFunc(),
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(256);
+});
