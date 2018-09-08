@@ -3,12 +3,12 @@ install:
 
 
 start:
-	npm run babel-node './src/index.js'
+	npm run gulp dev
 
 
 build:
 	rm -rf dist
-	npm run build
+	NODE_ENV=production npm run gulp prod
 
 
 lint:

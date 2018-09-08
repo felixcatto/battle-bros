@@ -1,0 +1,70 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
+// @import "../../public/css/lib/fontawesome-all.min.css";
+
+
+
+$i: 50;
+@while  $i >= 0 {
+  .mb-#{$i} {
+    margin-bottom: $i + px !important;
+  }
+  .mt-#{$i} {
+    margin-top: $i + px !important;
+  }
+  .ml-#{$i} {
+    margin-left: $i + px !important;
+  }
+  .mr-#{$i} {
+    margin-right: $i + px !important;
+  }
+  .pb-#{$i} {
+    padding-bottom: $i + px !important;
+  }
+  .pt-#{$i} {
+    padding-top: $i + px !important;
+  }
+  .pl-#{$i} {
+    padding-left: $i + px !important;
+  }
+  .pr-#{$i} {
+    padding-right: $i + px !important;
+  }
+  .px-#{$i} {
+    padding-left: $i + px !important;
+    padding-right: $i + px !important;
+  }
+  .py-#{$i} {
+    padding-top: $i + px !important;
+    padding-bottom: $i + px !important;
+  }
+  $i: $i - 5;
+}
+
+@keyframes smooth-appearance {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.a-appearance {
+  animation: smooth-appearance;
+  animation-duration: 0.3s;
+}
+
+
+body {
+  font-family: "Comic Sans MS";
+  // background-image: url('/public/img/glitch.png');
+  // background-image: url('/public/img/wild-sea.png');
+  background-image: url('/public/img/celebration.png');
+}
+
+
+.app {
+  &__container {
+    min-height: 100vh;
+    background: #fff;
+    box-shadow: 
+      inset 12px 0 25px -15px rgba(0,0,0,0.9),
+      inset -12px 0 25px -15px rgba(0,0,0,0.9);
+  }
+}
