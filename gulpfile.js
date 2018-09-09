@@ -22,6 +22,7 @@ const startDevServer = (done) => {
         hotClient: {
           host: 'localhost',
           port: 8090,
+          logLevel: 'error',
         },
         on: {
           listening(server) {

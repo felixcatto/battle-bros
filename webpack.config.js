@@ -41,7 +41,8 @@ module.exports = {
               '@babel/preset-react',
             ],
             'plugins': [
-              ['@babel/plugin-proposal-pipeline-operator', { 'proposal': 'minimal' }]
+              ['@babel/plugin-proposal-pipeline-operator', { 'proposal': 'minimal' }],
+              'transform-class-properties',
             ],
           },
         },

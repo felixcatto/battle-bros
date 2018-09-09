@@ -1,5 +1,5 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
-// @import "../../public/css/lib/fontawesome-all.min.css";
+@import "../../public/css/lib/fontawesome-all.min.css";
 
 
 
@@ -50,12 +50,22 @@ $i: 50;
   animation-duration: 0.3s;
 }
 
+@font-face {
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: 900;
+  src:
+    url(/public/css/webfonts/fa-solid-900.woff2) format("woff2"),
+    url(/public/css/webfonts/fa-solid-900.woff) format("woff");
+}
+
 
 body {
   font-family: "Comic Sans MS";
-  // background-image: url('/public/img/glitch.png');
-  // background-image: url('/public/img/wild-sea.png');
+  background-image: url('/public/img/glitch.png');
+  background-image: url('/public/img/wild-sea.png');
   background-image: url('/public/img/celebration.png');
+  color: #34485c;
 }
 
 
@@ -66,5 +76,9 @@ body {
     box-shadow: 
       inset 12px 0 25px -15px rgba(0,0,0,0.9),
       inset -12px 0 25px -15px rgba(0,0,0,0.9);
+  }
+
+  &__error {
+    color: #c9302c;
   }
 }
