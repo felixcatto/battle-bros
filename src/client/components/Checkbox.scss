@@ -37,4 +37,8 @@
   &__input:checked + &__label::after {
     display: block;
   }
+  &__input:disabled + &__label {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }

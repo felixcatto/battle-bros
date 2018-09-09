@@ -2,7 +2,8 @@ import './App.scss';
 import React from 'react';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
-import { getAverageEHP } from '../math';
+import {isEmpty} from 'lodash';
+import { getAverageEHP, getEHPStats } from '../math';
 import Checkbox from './Checkbox';
 
 
@@ -59,12 +60,12 @@ const CommonField = ({
 
 export default class App extends React.Component {
   state = {
-    isEHPCalculated: false,
     EHP: null,
+    logs: [],
   }
 
   render() {
-    const { isEHPCalculated, EHP } = this.state;
+    const { isTestMode, EHP, logs } = this.state;
     return (
       <div className="app__container container pt-30 pb-30">
         <Formik
@@ -78,16 +79,25 @@ export default class App extends React.Component {
             hasSteelBrow: false,
             hasNimble: false,
             hasBattleForged: false,
-            totalFtg: 0
+            totalFtg: 0,
           }}
           validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
-            const EHP = getAverageEHP(values)
-              |> (_ => _.toFixed(1));
-            this.setState({
-              isEHPCalculated: true,
-              EHP,
-            });
+            if (values.isTestMode) {
+              const stats = getEHPStats(values);
+              this.setState({
+                isTestMode: true,
+                EHP: stats.totalEHP.toFixed(1),
+                logs: stats.logs,
+              });
+            } else {
+              const totalEHP = getAverageEHP(values)
+              this.setState({
+                isTestMode: false,
+                EHP: totalEHP.toFixed(1),
+              });
+            }
+
             setSubmitting(false);
           }}
         >
@@ -103,9 +113,6 @@ export default class App extends React.Component {
                 <div className="col-3">
                   <Field component={CommonField} name="startHelm" label="Helm" type="number" />
                 </div>
-                <div className="col-3">
-                  <Field component={CommonField} name="countOfTests" label="Count Of Tests" type="number" />
-                </div>
               </div>
 
               <div className="row mb-20">
@@ -119,23 +126,32 @@ export default class App extends React.Component {
                     type="number"
                   />
                 </div>
+                <div className="col-3">
+                  <Field
+                    component={CommonField}
+                    name="countOfTests"
+                    label="Count Of Tests"
+                    type="number"
+                    disabled={values.isTestMode}
+                  />
+                </div>
+                <div className="col-3">
+                  <div className="pt-25">
+                    <Field component={Checkbox} name="isTestMode" label="Test Mode" />
+                  </div>
+                </div>
               </div>
 
               <div className="row mb-20">
                 <div className="col-3">
-                  <Field
-                    component={Checkbox}
-                    name="hasSteelBrow"
-                    className="checkbox__input"
-                    label="Has Steel Brow"
-                  />
+                  <Field component={Checkbox} name="hasSteelBrow" label="Has Steel Brow" />
                 </div>
                 <div className="col-3">
                   <Field
                     component={Checkbox}
                     name="hasNimble"
-                    className="checkbox__input"
                     label="Has Nimble"
+                    disabled={values.hasBattleForged}
                   />
 
                   {values.hasNimble &&
@@ -148,8 +164,8 @@ export default class App extends React.Component {
                   <Field
                     component={Checkbox}
                     name="hasBattleForged"
-                    className="checkbox__input"
                     label="Has Battle Forged"
+                    disabled={values.hasNimble}
                   />
                 </div>
               </div>
@@ -161,9 +177,25 @@ export default class App extends React.Component {
           )}
         </Formik>
 
-        {isEHPCalculated &&
+        {EHP &&
           <div className="mt-20">
             EHP: {EHP}
+          </div>
+        }
+
+        {isTestMode && !isEmpty(logs) &&
+          <div className="mt-20">
+            <div>*********</div>
+            {logs.map((el, i) => (
+              <div key={i}>
+                <div>hit to: {el.struckPartName}</div>
+                <div>hp: {el.hp}</div>
+                <div>armor: {el.armor}</div>
+                <div>helm: {el.helm}</div>
+                <div>ehp: {el.ehp}</div>
+                <div>*********</div>
+              </div>
+            ))}
           </div>
         }
       </div>

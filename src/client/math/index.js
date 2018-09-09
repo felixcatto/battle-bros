@@ -1,7 +1,7 @@
 import configureStatsAfterHit from './statsAfterHit';
 
 
-const getEHP = (options) => {
+export const getEHPStats = (options) => {
   const {
     startHp,
     startArmor,
@@ -14,6 +14,9 @@ const getEHP = (options) => {
   } = options;
 
   const getStatsAfterHit = configureStatsAfterHit(options);
+  const stats = {
+    logs: [],
+  };
 
   const makeHit = (armor, helm, hp, totalEHP) => {
     const chance = getRandomNum();
@@ -30,9 +33,18 @@ const getEHP = (options) => {
         nimbleRandomFunc,
       });
 
+      stats.logs.push({
+        ehp: afterHit.ehp,
+        hp: afterHit.hp,
+        armor,
+        helm: afterHit.struckArmorPart,
+        struckPartName: 'head',
+      });
+
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
-        return newTotalEHP;
+        stats.totalEHP = newTotalEHP;
+        return stats;
       }
 
       return makeHit(armor, afterHit.struckArmorPart, afterHit.hp, newTotalEHP);
@@ -50,9 +62,18 @@ const getEHP = (options) => {
         nimbleRandomFunc,
       });
 
+      stats.logs.push({
+        ehp: afterHit.ehp,
+        hp: afterHit.hp,
+        armor: afterHit.struckArmorPart,
+        helm,
+        struckPartName: 'body',
+      });
+
       const newTotalEHP = totalEHP + afterHit.ehp;
       if (afterHit.hp === 0) {
-        return newTotalEHP;
+        stats.totalEHP = newTotalEHP;
+        return stats;
       }
 
       return makeHit(afterHit.struckArmorPart, helm, afterHit.hp, newTotalEHP);
@@ -67,7 +88,7 @@ const getAverageEHP = (options) => {
   const { countOfTests = 50000 } = options;
 
   const sumOfEHP = [...Array(countOfTests).keys()]
-    .map(() => getEHP(options))
+    .map(() => getEHPStats(options).totalEHP)
     .reduce((acc, num) => acc + num, 0);
   return sumOfEHP / countOfTests;
 };
