@@ -11,6 +11,10 @@ build:
 	NODE_ENV=production npm run gulp prod
 
 
+deploy: build
+	node dist/bin/server.js
+
+
 lint:
 	npm run eslint --silent .
 
