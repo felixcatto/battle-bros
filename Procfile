@@ -1,1 +1,1 @@
-web: make deploy
+web: node dist/bin/server.js

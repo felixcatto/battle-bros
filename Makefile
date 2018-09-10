@@ -8,11 +8,7 @@ start:
 
 build:
 	rm -rf dist
-	NODE_ENV=production npm run gulp prod
-
-
-deploy: build
-	node dist/bin/server.js
+	NODE_ENV=production npm run gulp prod	
 
 
 lint:
