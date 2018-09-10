@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const isDevMode = process.env.NODE_ENV !== 'production'
 const mode = isDevMode ? 'development': 'production';
 const devtool = isDevMode ? 'cheap-module-eval-source-map': '';
-const cssLoader = isDevMode ? 'style-loader' : MiniCssExtractPlugin.loader;
+const cssLoader = MiniCssExtractPlugin.loader;
 
 module.exports = {
   mode,

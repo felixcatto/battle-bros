@@ -55,16 +55,16 @@ $i: 50;
   font-style: normal;
   font-weight: 900;
   src:
-    url(/public/css/webfonts/fa-solid-900.woff2) format("woff2"),
-    url(/public/css/webfonts/fa-solid-900.woff) format("woff");
+    url(/font/fa-solid-900.woff2) format("woff2"),
+    url(/font/fa-solid-900.woff) format("woff");
 }
 
 
 body {
   font-family: "Comic Sans MS";
-  background-image: url('/public/img/glitch.png');
-  background-image: url('/public/img/wild-sea.png');
-  background-image: url('/public/img/celebration.png');
+  background-image: url('/img/glitch.png');
+  background-image: url('/img/wild-sea.png');
+  background-image: url('/img/celebration.png');
   color: #34485c;
 }
 

@@ -2,15 +2,12 @@ module.exports = {
   presets: [
     ["@babel/env", {
       targets: {
-        edge: "17",
-        firefox: "60",
-        chrome: "67",
-        safari: "11.1"
+        node: true,
       },
-      useBuiltIns: "usage"
+      useBuiltIns: "usage",
     }],
   ],
-  "plugins": [
-    ["@babel/plugin-proposal-pipeline-operator", { "proposal": "minimal" }]
+  plugins: [
+    ["@babel/plugin-proposal-pipeline-operator", { proposal: "minimal" }]
   ],
 };
