@@ -1,16 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
-const isDevMode = process.env.NODE_ENV !== 'production'
-const mode = isDevMode ? 'development': 'production';
-const devtool = isDevMode ? 'cheap-module-eval-source-map': '';
-const cssLoader = MiniCssExtractPlugin.loader;
-
-module.exports = {
-  mode,
-  devtool,
+const common = {
   entry: {
     index: path.resolve(__dirname, 'src/client/index.js'),
   },
@@ -50,7 +44,7 @@ module.exports = {
       {
         test: /local\.scss$/,
         use: [
-          cssLoader,
+          MiniCssExtractPlugin.loader,
           { loader: 'css-loader', options: { modules: 1 } },
           'sass-loader',
         ],
@@ -58,7 +52,7 @@ module.exports = {
       {
         test: /(?<!local)\.scss$/,
         use: [
-          cssLoader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'sass-loader',
         ],
@@ -80,3 +74,14 @@ module.exports = {
     })
   ],
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports = merge(common, {
+    mode: 'production',
+  });
+} else {
+  module.exports = merge(common, {
+    mode: 'development',
+    devtool: 'cheap-module-eval-source-map',
+  });
+}

@@ -8,7 +8,11 @@ start:
 
 build:
 	rm -rf dist
-	NODE_ENV=production npm run gulp prod	
+	NODE_ENV=production npm run gulp prod
+
+
+webpack_bundle:
+	NODE_ENV=production npx webpack-cli
 
 
 lint:
