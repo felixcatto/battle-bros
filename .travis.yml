@@ -2,6 +2,15 @@ language: node_js
 node_js:
   - 10
 
-branches:
-  only:
-    - master
+script:
+  - make test_once
+
+before_deploy:
+  - make build
+
+deploy:
+  provider: heroku
+  app: 'bbbros'
+  skip_cleanup: true
+  api_key:
+    secure: $HEROKU_API_KEY
