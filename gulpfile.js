@@ -95,9 +95,8 @@ const transpileServerJs = () => gulp.src(serverJsPath)
 const clean = () => del(['dist']);
 
 
-const watch = (done) => {
+const watch = () => {
   gulp.watch('main/index.html', gulp.series(copyViews, startServer, reloadDevServer));
-  done();
 };
 
 

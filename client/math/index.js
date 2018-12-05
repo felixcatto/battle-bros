@@ -7,8 +7,10 @@ export const getEHPStats = (options) => {
     startArmor,
     startHelm,
     dmgPerHit,
+    vsArmorPercent,
     armorPiercingPercent,
     totalFtg,
+    hasSteelBrow,
     getRandomNum = Math.random,
   } = options;
 
@@ -27,8 +29,10 @@ export const getEHPStats = (options) => {
         hp,
         struckPartName: 'head',
         dmg: dmgPerHit,
+        vsAPercent: vsArmorPercent,
         APRPercent: armorPiercingPercent,
         totalFtg,
+        hasSteelBrow,
       });
 
       stats.logs.push({
@@ -55,8 +59,10 @@ export const getEHPStats = (options) => {
         hp,
         struckPartName: 'body',
         dmg: dmgPerHit,
+        vsAPercent: vsArmorPercent,
         APRPercent: armorPiercingPercent,
         totalFtg,
+        hasSteelBrow,
       });
 
       stats.logs.push({

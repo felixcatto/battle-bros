@@ -1,6 +1,8 @@
 import './App.scss';
 import React from 'react';
-import { Formik, Field, Form } from 'formik';
+import {
+  Formik, Field, Form, ErrorMessage,
+} from 'formik';
 import * as Yup from 'yup';
 import { isEmpty } from 'lodash';
 import { getAverageEHP, getEHPStats } from '../math';
@@ -32,6 +34,10 @@ const validationSchema = Yup.object().shape({
     .min(0)
     .max(2)
     .required('Required'),
+  vsArmorPercent: Yup.number()
+    .min(0)
+    .max(4)
+    .required('Required'),
   hasSteelBrow: Yup.boolean(),
   hasNimble: Yup.boolean(),
   hasBattleForged: Yup.boolean(),
@@ -44,17 +50,11 @@ const validationSchema = Yup.object().shape({
     )),
 });
 
-const CommonField = ({
-  field,
-  form: { touched, errors },
-  ...props
-}) => (
+const CommonField = ({ field, ...props }) => (
   <label className="d-block mb-0">
     <div>{props.label}</div>
     <input type={props.type} className="form-control" {...field} {...props} />
-    {errors[field.name] && touched[field.name] ? (
-      <div className="app__error">{errors[field.name]}</div>
-    ) : null}
+    <ErrorMessage name={field.name} component="div" className="app__error" />
   </label>
 );
 
@@ -68,6 +68,7 @@ export default class App extends React.Component {
     const { isTestMode, EHP, logs } = this.state;
     return (
       <div className="app__container container pt-30 pb-30">
+        <h1 className="mb-20">Battle Brothers EHP Calculation</h1>
         <Formik
           initialValues={{
             startHp: 65,
@@ -76,6 +77,7 @@ export default class App extends React.Component {
             countOfTests: 50000,
             dmgPerHit: 60,
             armorPiercingPercent: 0.3,
+            vsArmorPercent: 1,
             hasSteelBrow: false,
             hasNimble: false,
             hasBattleForged: false,
@@ -105,7 +107,10 @@ export default class App extends React.Component {
             isSubmitting, values,
           }) => (
             <Form>
-              <div className="row mb-20">
+
+              <h4>Character</h4>
+
+              <div className="row mb-30">
                 <div className="col-3">
                   <Field component={CommonField} name="startHp" label="HP" type="number" />
                 </div>
@@ -117,9 +122,16 @@ export default class App extends React.Component {
                 </div>
               </div>
 
-              <div className="row mb-20">
+              <h4>Weapon</h4>
+
+              <div className="row mb-30">
                 <div className="col-3">
-                  <Field component={CommonField} name="dmgPerHit" label="Damage Per Hit" type="number" />
+                  <Field
+                    component={CommonField}
+                    name="dmgPerHit"
+                    label="Average Damage"
+                    type="number"
+                  />
                 </div>
                 <div className="col-3">
                   <Field component={CommonField}
@@ -128,6 +140,46 @@ export default class App extends React.Component {
                     type="number"
                   />
                 </div>
+                <div className="col-3">
+                  <Field component={CommonField}
+                    name="vsArmorPercent"
+                    label="vs Armor Percent"
+                    type="number"
+                  />
+                </div>
+              </div>
+
+              <h4>Perks</h4>
+
+              <div className="row mb-20">
+                <div className="col-3">
+                  <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
+                </div>
+                <div className="col-3">
+                  <Field
+                    component={Checkbox}
+                    name="hasNimble"
+                    label="Nimble"
+                    disabled={values.hasBattleForged}
+                  />
+
+                  {values.hasNimble &&
+                    <div className="mt-20">
+                      <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
+                    </div>
+                  }
+                </div>
+                <div className="col-3">
+                  <Field
+                    component={Checkbox}
+                    name="hasBattleForged"
+                    label="Battle Forged"
+                    disabled={values.hasNimble}
+                  />
+                </div>
+              </div>
+
+              <div className="row mb-30">
                 <div className="col-3">
                   <Field
                     component={CommonField}
@@ -141,34 +193,6 @@ export default class App extends React.Component {
                   <div className="pt-25">
                     <Field component={Checkbox} name="isTestMode" label="Test Mode" />
                   </div>
-                </div>
-              </div>
-
-              <div className="row mb-20">
-                <div className="col-3">
-                  <Field component={Checkbox} name="hasSteelBrow" label="Has Steel Brow" />
-                </div>
-                <div className="col-3">
-                  <Field
-                    component={Checkbox}
-                    name="hasNimble"
-                    label="Has Nimble"
-                    disabled={values.hasBattleForged}
-                  />
-
-                  {values.hasNimble
-                    && <div className="mt-20">
-                      <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
-                    </div>
-                  }
-                </div>
-                <div className="col-3">
-                  <Field
-                    component={Checkbox}
-                    name="hasBattleForged"
-                    label="Has Battle Forged"
-                    disabled={values.hasNimble}
-                  />
                 </div>
               </div>
 
