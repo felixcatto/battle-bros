@@ -1,3 +1,21 @@
+const getNimbleDmgReduction = (totalFtg) => {
+  let rawNibleReduction;
+  if (totalFtg <= 5) {
+    rawNibleReduction = totalFtg;
+  } else if (totalFtg <= 13) {
+    rawNibleReduction = Math.floor(totalFtg * 1.25);
+  } else if (totalFtg <= 25) {
+    rawNibleReduction = Math.floor(totalFtg * 1.3);
+  } else if (totalFtg <= 35) {
+    rawNibleReduction = Math.floor(totalFtg * 1.4);
+  } else if (totalFtg <= 50) {
+    rawNibleReduction = Math.floor(totalFtg * 1.46);
+  } else {
+    rawNibleReduction = 75;
+  }
+  return (rawNibleReduction + 25) / 100;
+};
+
 const noPerk = (options) => {
   const {
     struckArmorPart,
@@ -81,60 +99,28 @@ const NMBL = (options) => {
     dmg,
     APRPercent,
     totalFtg,
-    nimbleRandomFunc,
   } = options;
 
-  const nimbleChance = Math.max(1 - totalFtg * 0.02, 0);
+  const nimbleDmgReduction = getNimbleDmgReduction(totalFtg);
   const headDmgModifier = struckPartName === 'head' ? 1.5 : 1;
 
-  if (nimbleRandomFunc() < nimbleChance) {
-    const newDmg = Math.floor(dmg / 2);
-
-    const maxAPRDmg = Math.ceil(
-      (hp + struckArmorPart * 0.1) / (APRPercent * headDmgModifier + 0.1),
-    );
-    const armorDmg = Math.min(struckArmorPart, newDmg, maxAPRDmg);
-    const newArmor = struckArmorPart - armorDmg;
-    const newArmorDmgReduction = Math.floor(newArmor * 0.1);
-
-    const APRDmg = Math.max(
-      Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0,
-    );
-    const armorOverkill = Math.min(
-      Math.ceil((hp - APRDmg) / headDmgModifier),
-      Math.max(newDmg - struckArmorPart, 0),
-    );
-    const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
-
-    if (newHp <= 0) {
-      return {
-        struckArmorPart: newArmor,
-        hp: 0,
-        ehp: (armorDmg + armorOverkill) * 2,
-      };
-    }
-
-    return {
-      struckArmorPart: newArmor,
-      hp: newHp,
-      ehp: dmg,
-    };
-  }
-
-  const maxAPRDmg = Math.ceil((hp + struckArmorPart * 0.1) / (APRPercent * headDmgModifier + 0.1));
+  // eslint-disable-next-line
+  const maxAPRDmg = (hp + struckArmorPart * 0.1) / (APRPercent * headDmgModifier * nimbleDmgReduction + 0.1)
+    |> Math.ceil;
   const armorDmg = Math.min(struckArmorPart, dmg, maxAPRDmg);
   const newArmor = struckArmorPart - armorDmg;
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const APRDmg = Math.max(
-    Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction,
-    0,
-  );
+  // eslint-disable-next-line
+  const APRDmg = Math.floor(armorDmg * APRPercent * headDmgModifier * nimbleDmgReduction) - newArmorDmgReduction
+    |> (_ => Math.max(_, 0));
+
   const armorOverkill = Math.min(
-    Math.ceil((hp - APRDmg) / headDmgModifier),
+    Math.ceil((hp - APRDmg) / (headDmgModifier * nimbleDmgReduction)),
     Math.max(dmg - struckArmorPart, 0),
   );
-  const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
+
+  const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier * nimbleDmgReduction);
 
   if (newHp <= 0) {
     return {
@@ -159,46 +145,25 @@ const NMBL_SB = (options) => {
     dmg,
     APRPercent,
     totalFtg,
-    nimbleRandomFunc,
   } = options;
 
-  const nimbleChance = Math.max(1 - totalFtg * 0.02, 0);
+  const nimbleDmgReduction = getNimbleDmgReduction(totalFtg);
 
-  if (nimbleRandomFunc() < nimbleChance) {
-    const newDmg = Math.floor(dmg / 2);
-
-    const maxAPRDmg = Math.ceil((hp + struckArmorPart * 0.1) / (APRPercent + 0.1));
-    const armorDmg = Math.min(struckArmorPart, newDmg, maxAPRDmg);
-    const newArmor = struckArmorPart - armorDmg;
-    const newArmorDmgReduction = Math.floor(newArmor * 0.1);
-
-    const APRDmg = Math.max(Math.floor(armorDmg * APRPercent) - newArmorDmgReduction, 0);
-    const armorOverkill = Math.min(Math.ceil(hp - APRDmg), Math.max(newDmg - struckArmorPart, 0));
-    const newHp = hp - APRDmg - armorOverkill;
-
-    if (newHp <= 0) {
-      return {
-        struckArmorPart: newArmor,
-        hp: 0,
-        ehp: (armorDmg + armorOverkill) * 2,
-      };
-    }
-
-    return {
-      struckArmorPart: newArmor,
-      hp: newHp,
-      ehp: dmg,
-    };
-  }
-
-  const maxAPRDmg = Math.ceil((hp + struckArmorPart * 0.1) / (APRPercent + 0.1));
+  const maxAPRDmg = (hp + struckArmorPart * 0.1) / (APRPercent * nimbleDmgReduction + 0.1)
+    |> Math.ceil;
   const armorDmg = Math.min(struckArmorPart, dmg, maxAPRDmg);
   const newArmor = struckArmorPart - armorDmg;
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const APRDmg = Math.max(Math.floor(armorDmg * APRPercent) - newArmorDmgReduction, 0);
-  const armorOverkill = Math.min(Math.ceil(hp - APRDmg), Math.max(dmg - struckArmorPart, 0));
-  const newHp = hp - APRDmg - armorOverkill;
+  const APRDmg = Math.floor(armorDmg * APRPercent * nimbleDmgReduction) - newArmorDmgReduction
+    |> (_ => Math.max(_, 0));
+
+  const armorOverkill = Math.min(
+    Math.ceil((hp - APRDmg) / nimbleDmgReduction),
+    Math.max(dmg - struckArmorPart, 0),
+  );
+
+  const newHp = hp - APRDmg - Math.floor(armorOverkill * nimbleDmgReduction);
 
   if (newHp <= 0) {
     return {

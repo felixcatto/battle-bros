@@ -10,7 +10,7 @@ const getRandomFunc = () => {
 };
 
 
-test('simple ehp test (steelbrow)', () => {
+test('simple ehp test (Steelbrow)', () => {
   const options = {
     startHp: 60,
     startArmor: 220,
@@ -27,7 +27,7 @@ test('simple ehp test (steelbrow)', () => {
 });
 
 
-test('simple ehp test (steelbrow)', () => {
+test('simple ehp test (Steelbrow)', () => {
   const options = {
     startHp: 55,
     startArmor: 220,
@@ -44,7 +44,7 @@ test('simple ehp test (steelbrow)', () => {
 });
 
 
-test('low hp (steelbrow)', () => {
+test('low hp (Steelbrow)', () => {
   const options = {
     startHp: 2,
     startArmor: 220,
@@ -61,7 +61,7 @@ test('low hp (steelbrow)', () => {
 });
 
 
-test('low hp (steelbrow)', () => {
+test('low hp (Steelbrow)', () => {
   const options = {
     startHp: 1,
     startArmor: 220,
@@ -158,20 +158,37 @@ test('(Battle Forged)', () => {
   expect(ehp).toBe(348);
 });
 
-test('(Nimble)', () => {
+test('(Nimble) full powered', () => {
   const options = {
-    startHp: 60,
-    startArmor: 80,
-    startHelm: 80,
+    startHp: 125,
+    startArmor: 30,
+    startHelm: 40,
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     hasNimble: true,
-    totalFtg: 13,
-    nimbleRandomFunc: getRandomFunc(),
+    totalFtg: 0,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(256);
+  expect(ehp).toBe(512);
+});
+
+test('(Nimble) (Steelbrow) 13 ftg', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 100,
+    startHelm: 90,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    hasSteelBrow: true,
+    hasNimble: true,
+    totalFtg: 13,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(282);
 });

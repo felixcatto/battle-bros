@@ -10,7 +10,6 @@ export const getEHPStats = (options) => {
     armorPiercingPercent,
     totalFtg,
     getRandomNum = Math.random,
-    nimbleRandomFunc = Math.random,
   } = options;
 
   const getStatsAfterHit = configureStatsAfterHit(options);
@@ -30,7 +29,6 @@ export const getEHPStats = (options) => {
         dmg: dmgPerHit,
         APRPercent: armorPiercingPercent,
         totalFtg,
-        nimbleRandomFunc,
       });
 
       stats.logs.push({
@@ -59,7 +57,6 @@ export const getEHPStats = (options) => {
         dmg: dmgPerHit,
         APRPercent: armorPiercingPercent,
         totalFtg,
-        nimbleRandomFunc,
       });
 
       stats.logs.push({
