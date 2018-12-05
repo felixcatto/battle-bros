@@ -1,4 +1,4 @@
-import { getAverageEHP } from '../src/client/math';
+import { getAverageEHP } from '../client/math';
 
 
 const getRandomFunc = () => {

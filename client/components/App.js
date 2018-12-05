@@ -2,7 +2,7 @@ import './App.scss';
 import React from 'react';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
-import {isEmpty} from 'lodash';
+import { isEmpty } from 'lodash';
 import { getAverageEHP, getEHPStats } from '../math';
 import Checkbox from './Checkbox';
 
@@ -47,7 +47,7 @@ const validationSchema = Yup.object().shape({
 const CommonField = ({
   field,
   form: { touched, errors },
-  ...props,
+  ...props
 }) => (
   <label className="d-block mb-0">
     <div>{props.label}</div>
@@ -91,7 +91,7 @@ export default class App extends React.Component {
                 logs: stats.logs,
               });
             } else {
-              const totalEHP = getAverageEHP(values)
+              const totalEHP = getAverageEHP(values);
               this.setState({
                 isTestMode: false,
                 EHP: totalEHP.toFixed(1),
@@ -101,7 +101,9 @@ export default class App extends React.Component {
             setSubmitting(false);
           }}
         >
-          {({ errors, touched, isSubmitting, values }) => (
+          {({
+            isSubmitting, values,
+          }) => (
             <Form>
               <div className="row mb-20">
                 <div className="col-3">
@@ -154,8 +156,8 @@ export default class App extends React.Component {
                     disabled={values.hasBattleForged}
                   />
 
-                  {values.hasNimble &&
-                    <div className="mt-20">
+                  {values.hasNimble
+                    && <div className="mt-20">
                       <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
                     </div>
                   }
@@ -177,14 +179,14 @@ export default class App extends React.Component {
           )}
         </Formik>
 
-        {EHP &&
-          <div className="mt-20">
+        {EHP
+          && <div className="mt-20">
             EHP: {EHP}
           </div>
         }
 
-        {isTestMode && !isEmpty(logs) &&
-          <div className="mt-20">
+        {isTestMode && !isEmpty(logs)
+          && <div className="mt-20">
             <div>*********</div>
             {logs.map((el, i) => (
               <div key={i}>

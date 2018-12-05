@@ -1,13 +1,13 @@
 module.exports = {
   presets: [
-    ["@babel/env", {
+    ['@babel/env', {
       targets: {
         node: true,
       },
-      useBuiltIns: "usage",
+      useBuiltIns: 'usage',
     }],
   ],
   plugins: [
-    ["@babel/plugin-proposal-pipeline-operator", { proposal: "minimal" }]
+    ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
   ],
 };

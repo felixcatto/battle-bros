@@ -1,12 +1,11 @@
 const path = require('path');
-const webpack = require('webpack');
 const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 
 const common = {
   entry: {
-    index: path.resolve(__dirname, 'src/client/index.js'),
+    index: path.resolve(__dirname, 'client/index.js'),
   },
   output: {
     filename: 'js/index.js',
@@ -34,8 +33,8 @@ const common = {
               }],
               '@babel/preset-react',
             ],
-            'plugins': [
-              ['@babel/plugin-proposal-pipeline-operator', { 'proposal': 'minimal' }],
+            plugins: [
+              ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
               'transform-class-properties',
             ],
           },
@@ -70,9 +69,14 @@ const common = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "css/index.css",
-    })
+      filename: 'css/index.css',
+    }),
   ],
+  stats: {
+    warnings: false,
+    children: false,
+    modules: false,
+  },
 };
 
 if (process.env.NODE_ENV === 'production') {

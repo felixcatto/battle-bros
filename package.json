@@ -4,13 +4,10 @@
   "description": "privet medved",
   "main": "index.js",
   "engines": {
-    "node": "8.11.3"
+    "node": "10"
   },
   "scripts": {
-    "webpack": "webpack",
-    "eslint": "eslint",
-    "gulp": "gulp",
-    "jest": "jest"
+    "gulp": "gulp"
   },
   "repository": {
     "type": "git",
@@ -38,6 +35,7 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-react": "^7.11.1",
     "file-loader": "^2.0.0",
     "gulp": "^4.0.0",
     "gulp-babel": "^8.0.0",

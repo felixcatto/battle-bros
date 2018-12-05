@@ -1,27 +1,23 @@
 install:
 	npm install
 
-
 start:
-	npm run gulp dev
-
+	npx gulp dev
 
 build:
-	rm -rf dist
-	NODE_ENV=production npm run gulp prod
+	NODE_ENV=production npx gulp prod
 
-
-webpack_bundle:
+webpack-bundle:
 	NODE_ENV=production npx webpack-cli
 
-
 lint:
-	npm run eslint --silent .
+	npx eslint .
 
-
-test_once:
-	npm run jest --silent
-
+lint-fix:
+	npx eslint --fix .
 
 test:
-	npm run jest --silent -- --watch
+	npx jest --watch
+
+test-once:
+	npx jest

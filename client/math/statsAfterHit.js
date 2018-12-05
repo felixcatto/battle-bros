@@ -14,8 +14,14 @@ const noPerk = (options) => {
   const newArmor = struckArmorPart - armorDmg;
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const APRDmg = Math.max(Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0);
-  const armorOverkill = Math.min(Math.ceil((hp - APRDmg) / headDmgModifier), Math.max(dmg - struckArmorPart, 0));
+  const APRDmg = Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction
+    |> (_ => Math.max(_, 0));
+
+  const armorOverkill = Math.min(
+    Math.ceil((hp - APRDmg) / headDmgModifier),
+    Math.max(dmg - struckArmorPart, 0),
+  );
+
   const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
 
   if (newHp <= 0) {
@@ -84,13 +90,20 @@ const NMBL = (options) => {
   if (nimbleRandomFunc() < nimbleChance) {
     const newDmg = Math.floor(dmg / 2);
 
-    const maxAPRDmg = Math.ceil((hp + struckArmorPart * 0.1) / (APRPercent * headDmgModifier + 0.1));
+    const maxAPRDmg = Math.ceil(
+      (hp + struckArmorPart * 0.1) / (APRPercent * headDmgModifier + 0.1),
+    );
     const armorDmg = Math.min(struckArmorPart, newDmg, maxAPRDmg);
     const newArmor = struckArmorPart - armorDmg;
     const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-    const APRDmg = Math.max(Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0);
-    const armorOverkill = Math.min(Math.ceil((hp - APRDmg) / headDmgModifier), Math.max(newDmg - struckArmorPart, 0));
+    const APRDmg = Math.max(
+      Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0,
+    );
+    const armorOverkill = Math.min(
+      Math.ceil((hp - APRDmg) / headDmgModifier),
+      Math.max(newDmg - struckArmorPart, 0),
+    );
     const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
 
     if (newHp <= 0) {
@@ -113,8 +126,14 @@ const NMBL = (options) => {
   const newArmor = struckArmorPart - armorDmg;
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const APRDmg = Math.max(Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0);
-  const armorOverkill = Math.min(Math.ceil((hp - APRDmg) / headDmgModifier), Math.max(dmg - struckArmorPart, 0));
+  const APRDmg = Math.max(
+    Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction,
+    0,
+  );
+  const armorOverkill = Math.min(
+    Math.ceil((hp - APRDmg) / headDmgModifier),
+    Math.max(dmg - struckArmorPart, 0),
+  );
   const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
 
   if (newHp <= 0) {
@@ -211,7 +230,7 @@ const BF = (options) => {
   const bfModifier = 1 - (struckArmorPart + oppositeArmorPart) * 0.01 * 0.05;
 
   const maxAPRDmg = Math.ceil(
-    (hp + struckArmorPart * 0.1) / ((APRPercent * headDmgModifier + 0.1) * bfModifier)
+    (hp + struckArmorPart * 0.1) / ((APRPercent * headDmgModifier + 0.1) * bfModifier),
   );
 
   const armorDmg = Math.min(struckArmorPart, Math.floor(dmg * bfModifier), maxAPRDmg);
@@ -220,7 +239,9 @@ const BF = (options) => {
   const newArmor = struckArmorPart - armorDmg;
   const newArmorDmgReduction = Math.floor(newArmor * 0.1);
 
-  const APRDmg = Math.max(Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction, 0);
+  const APRDmg = Math.floor(armorDmg * APRPercent * headDmgModifier) - newArmorDmgReduction
+    |> (_ => Math.max(_, 0));
+
   const armorOverkill = Math.min(
     Math.ceil((hp - APRDmg) / headDmgModifier),
     Math.max(dmg - Math.max(struckArmorPart, armorDmgBeforeBF), 0),
@@ -255,7 +276,7 @@ const SB_BF = (options) => {
   const bfModifier = 1 - (struckArmorPart + oppositeArmorPart) * 0.01 * 0.05;
 
   const maxAPRDmg = Math.ceil(
-    (hp + struckArmorPart * 0.1) / ((APRPercent + 0.1) * bfModifier)
+    (hp + struckArmorPart * 0.1) / ((APRPercent + 0.1) * bfModifier),
   );
 
   const armorDmg = Math.min(struckArmorPart, Math.floor(dmg * bfModifier), maxAPRDmg);
@@ -295,15 +316,14 @@ export default (options) => {
   } = options;
   if (hasBattleForged && hasSteelBrow) {
     return SB_BF;
-  } else if (hasBattleForged) {
+  } if (hasBattleForged) {
     return BF;
-  } else if (hasNimble && hasSteelBrow) {
+  } if (hasNimble && hasSteelBrow) {
     return NMBL_SB;
-  } else if (hasNimble) {
+  } if (hasNimble) {
     return NMBL;
-  } else if (hasSteelBrow) {
+  } if (hasSteelBrow) {
     return SB;
-  } else {
-    return noPerk;
   }
+  return noPerk;
 };
