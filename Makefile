@@ -21,3 +21,6 @@ test:
 
 test-once:
 	npx jest
+
+deploy:
+	git push -f heroku master
