@@ -1,11 +1,14 @@
 import './App.scss';
 import React from 'react';
 import {
-  Formik, Field, Form, ErrorMessage,
+  Field, ErrorMessage, withFormik,
 } from 'formik';
 import * as Yup from 'yup';
 import { isEmpty } from 'lodash';
+import Select from 'react-select';
+import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
+import weaponsList from 'Lib/weaponsList';
 import { getAverageEHP, getEHPStats } from '../math';
 import { getNimbleDmgReduction, getBFDmgReduction } from '../math/statsAfterHit';
 import Checkbox from './Checkbox';
@@ -52,6 +55,24 @@ const validationSchema = Yup.object().shape({
     )),
 });
 
+const formikEnhancer = withFormik({
+  validationSchema,
+  mapPropsToValues: () => ({
+    startHp: 65,
+    startArmor: '',
+    startHelm: '',
+    countOfTests: 50000,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    hasSteelBrow: false,
+    hasNimble: false,
+    hasBattleForged: false,
+    totalFtg: 0,
+  }),
+  displayName: 'MyForm',
+});
+
 const CommonField = ({ field, ...props }) => (
   <label className="d-block mb-0">
     <div>{props.label}</div>
@@ -60,14 +81,68 @@ const CommonField = ({ field, ...props }) => (
   </label>
 );
 
-export default class App extends React.Component {
+const weaponOptions = weaponsList.map(el => ({
+  value: el,
+  label: el.name,
+}));
+
+class App extends React.Component {
+  static propTypes = {
+    setFieldValue: PropTypes.any.isRequired,
+    isSubmitting: PropTypes.any.isRequired,
+    values: PropTypes.any.isRequired,
+  }
+
   state = {
     EHP: null,
     logs: [],
+    selectedWeapon: null,
+  }
+
+  onWeaponSelect = (selectedWeapon) => {
+    this.setState({ selectedWeapon });
+    if (!selectedWeapon) return;
+
+    const { setFieldValue } = this.props;
+    const { dmg, armorPiercingPercent, vsArmorPercent } = selectedWeapon.value;
+    setFieldValue('dmgPerHit', dmg);
+    setFieldValue('armorPiercingPercent', armorPiercingPercent);
+    setFieldValue('vsArmorPercent', vsArmorPercent);
+  }
+
+  onSubmit = async (e) => {
+    e.preventDefault();
+    const { setTouched, values, validateForm } = this.props;
+    Object.keys(values)
+      .reduce((acc, key) => ({ ...acc, [key]: true }), {})
+      |> setTouched;
+
+    const errors = await validateForm();
+
+    if (!isEmpty(errors)) return;
+
+    if (values.isTestMode) {
+      const stats = getEHPStats(values);
+      this.setState({
+        isTestMode: true,
+        EHP: stats.totalEHP.toFixed(1),
+        logs: stats.logs,
+      });
+    } else {
+      const totalEHP = getAverageEHP(values);
+      this.setState({
+        isTestMode: false,
+        EHP: totalEHP.toFixed(1),
+      });
+    }
   }
 
   render() {
-    const { isTestMode, EHP, logs } = this.state;
+    const {
+      isTestMode, EHP, logs, selectedWeapon,
+    } = this.state;
+    const { isSubmitting, values } = this.props;
+
     return (
       <div className="pt-30 pb-30">
         <div className="d-flex align-items-center justify-content-between mb-20">
@@ -76,148 +151,117 @@ export default class App extends React.Component {
             Github Repo
           </a>
         </div>
-        <Formik
-          initialValues={{
-            startHp: 65,
-            startArmor: '',
-            startHelm: '',
-            countOfTests: 50000,
-            dmgPerHit: 60,
-            armorPiercingPercent: 0.3,
-            vsArmorPercent: 1,
-            hasSteelBrow: false,
-            hasNimble: false,
-            hasBattleForged: false,
-            totalFtg: 0,
-          }}
-          validationSchema={validationSchema}
-          onSubmit={(values, { setSubmitting }) => {
-            if (values.isTestMode) {
-              const stats = getEHPStats(values);
-              this.setState({
-                isTestMode: true,
-                EHP: stats.totalEHP.toFixed(1),
-                logs: stats.logs,
-              });
-            } else {
-              const totalEHP = getAverageEHP(values);
-              this.setState({
-                isTestMode: false,
-                EHP: totalEHP.toFixed(1),
-              });
-            }
 
-            setSubmitting(false);
-          }}
-        >
-          {({
-            isSubmitting, values,
-          }) => (
-            <Form>
+        <form onSubmit={this.onSubmit}>
 
-              <h4>Character</h4>
+          <h4>Character</h4>
+          <div className="row mb-30">
+            <div className="col-3">
+              <Field component={CommonField} name="startHp" label="HP" type="number" />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField} name="startArmor" label="Body Armor" type="number" />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField} name="startHelm" label="Helm" type="number" />
+            </div>
+          </div>
 
-              <div className="row mb-30">
-                <div className="col-3">
-                  <Field component={CommonField} name="startHp" label="HP" type="number" />
-                </div>
-                <div className="col-3">
-                  <Field component={CommonField} name="startArmor" label="Body Armor" type="number" />
-                </div>
-                <div className="col-3">
-                  <Field component={CommonField} name="startHelm" label="Helm" type="number" />
-                </div>
-              </div>
+          <h4>Weapon</h4>
+          <div className="row mb-30">
+            <div className="col-3">
+              <Select
+                value={selectedWeapon}
+                onChange={this.onWeaponSelect}
+                options={weaponOptions}
+                isClearable
+              />
+            </div>
+          </div>
 
-              <h4>Weapon</h4>
+          <div className="row mb-30">
+            <div className="col-3">
+              <Field
+                component={CommonField}
+                name="dmgPerHit"
+                label="Average Damage"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="armorPiercingPercent"
+                label="Armor Piercing Percent"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="vsArmorPercent"
+                label="vs Armor Percent"
+                type="number"
+              />
+            </div>
+          </div>
 
-              <div className="row mb-30">
-                <div className="col-3">
-                  <Field
-                    component={CommonField}
-                    name="dmgPerHit"
-                    label="Average Damage"
-                    type="number"
-                  />
+          <h4 className="mb-0">Perks</h4>
+          <div className="app__mix-row row align-items-center mb-20">
+            <div className="col-3">
+              <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
+            </div>
+            <div className="col-3 d-flex align-items-center">
+              <Field
+                component={Checkbox}
+                name="hasBattleForged"
+                label="Battle Forged"
+                disabled={values.hasNimble}
+              />
+              {values.hasBattleForged && values.startArmor && values.startHelm &&
+                <div className="app__perk-value ml-10">
+                  {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
                 </div>
-                <div className="col-3">
-                  <Field component={CommonField}
-                    name="armorPiercingPercent"
-                    label="Armor Piercing Percent"
-                    type="number"
-                  />
+              }
+            </div>
+            <div className="col-3 d-flex align-items-center">
+              <Field
+                component={Checkbox}
+                name="hasNimble"
+                label="Nimble"
+                disabled={values.hasBattleForged}
+              />
+              {values.hasNimble &&
+                <div className="app__perk-value ml-10">
+                  {round((1 - getNimbleDmgReduction(values.totalFtg)), 2)}
                 </div>
-                <div className="col-3">
-                  <Field component={CommonField}
-                    name="vsArmorPercent"
-                    label="vs Armor Percent"
-                    type="number"
-                  />
-                </div>
-              </div>
+              }
+            </div>
+            <div className="col-3">
+              {values.hasNimble &&
+                <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
+              }
+            </div>
+          </div>
 
-              <h4 className="mb-0">Perks</h4>
+          <div className="row align-items-center mb-30">
+            <div className="col-3">
+              <Field
+                component={CommonField}
+                name="countOfTests"
+                label="Count Of Tests"
+                type="number"
+                disabled={values.isTestMode}
+              />
+            </div>
+            <div className="col-3">
+              <Field component={Checkbox} name="isTestMode" label="Test Mode" />
+            </div>
+          </div>
 
-              <div className="app__mix-row row align-items-center mb-20">
-                <div className="col-3">
-                  <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
-                </div>
-                <div className="col-3 d-flex align-items-center">
-                  <Field
-                    component={Checkbox}
-                    name="hasBattleForged"
-                    label="Battle Forged"
-                    disabled={values.hasNimble}
-                  />
-                  {values.hasBattleForged && values.startArmor && values.startHelm &&
-                    <div className="app__perk-value ml-10">
-                      {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
-                    </div>
-                  }
-                </div>
-                <div className="col-3 d-flex align-items-center">
-                  <Field
-                    component={Checkbox}
-                    name="hasNimble"
-                    label="Nimble"
-                    disabled={values.hasBattleForged}
-                  />
-                  {values.hasNimble &&
-                    <div className="app__perk-value ml-10">
-                      {round((1 - getNimbleDmgReduction(values.totalFtg)), 2)}
-                    </div>
-                  }
-                </div>
-                <div className="col-3">
-                  {values.hasNimble &&
-                    <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
-                  }
-                </div>
-              </div>
+          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+            Calculate
+          </button>
 
-              <div className="row mb-30">
-                <div className="col-3">
-                  <Field
-                    component={CommonField}
-                    name="countOfTests"
-                    label="Count Of Tests"
-                    type="number"
-                    disabled={values.isTestMode}
-                  />
-                </div>
-                <div className="col-3">
-                  <div className="pt-25">
-                    <Field component={Checkbox} name="isTestMode" label="Test Mode" />
-                  </div>
-                </div>
-              </div>
-
-              <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-                Calculate
-              </button>
-            </Form>
-          )}
-        </Formik>
+        </form>
 
         {EHP &&
           <div className="mt-20">
@@ -244,3 +288,6 @@ export default class App extends React.Component {
     );
   }
 }
+
+
+export default formikEnhancer(App);
