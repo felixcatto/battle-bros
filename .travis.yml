@@ -3,5 +3,5 @@ node_js:
   - 10
 
 script:
-  - make test_once
+  - make test-once
   - make lint

@@ -203,14 +203,14 @@ export default class App extends React.Component {
           )}
         </Formik>
 
-        {EHP
-          && <div className="mt-20">
+        {EHP &&
+          <div className="mt-20">
             EHP: {EHP}
           </div>
         }
 
-        {isTestMode && !isEmpty(logs)
-          && <div className="mt-20">
+        {isTestMode && !isEmpty(logs) &&
+          <div className="mt-20">
             <div>*********</div>
             {logs.map((el, i) => (
               <div key={i}>
