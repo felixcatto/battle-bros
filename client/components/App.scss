@@ -66,6 +66,7 @@ body {
   background-image: url('/img/wild-sea.png');
   background-image: url('/img/celebration.png');
   color: #34485c;
+  font-size: 16px;
 }
 
 
@@ -80,5 +81,13 @@ body {
 
   &__error {
     color: #c9302c;
+  }
+
+  &__mix-row {
+    min-height: 62px;
+  }
+
+  &__perk-value {
+    font-size: 13px;
   }
 }

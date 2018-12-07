@@ -12,6 +12,11 @@ const common = {
     path: path.resolve(__dirname, 'dist/public/'),
     publicPath: '/',
   },
+  resolve: {
+    alias: {
+      Lib: path.resolve(__dirname, 'lib'),
+    },
+  },
   module: {
     rules: [
       {

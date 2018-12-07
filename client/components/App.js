@@ -5,7 +5,9 @@ import {
 } from 'formik';
 import * as Yup from 'yup';
 import { isEmpty } from 'lodash';
+import { round } from 'Lib/utils';
 import { getAverageEHP, getEHPStats } from '../math';
+import { getNimbleDmgReduction, getBFDmgReduction } from '../math/statsAfterHit';
 import Checkbox from './Checkbox';
 
 
@@ -67,8 +69,13 @@ export default class App extends React.Component {
   render() {
     const { isTestMode, EHP, logs } = this.state;
     return (
-      <div className="app__container container pt-30 pb-30">
-        <h1 className="mb-20">Battle Brothers EHP Calculation</h1>
+      <div className="pt-30 pb-30">
+        <div className="d-flex align-items-center justify-content-between mb-20">
+          <h1 className="mb-0">Battle Brothers EHP Calculation</h1>
+          <a href="https://github.com/felixcatto/battle-bros" target="_blank" rel="noopener noreferrer">
+            Github Repo
+          </a>
+        </div>
         <Formik
           initialValues={{
             startHp: 65,
@@ -149,33 +156,42 @@ export default class App extends React.Component {
                 </div>
               </div>
 
-              <h4>Perks</h4>
+              <h4 className="mb-0">Perks</h4>
 
-              <div className="row mb-20">
+              <div className="app__mix-row row align-items-center mb-20">
                 <div className="col-3">
                   <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
                 </div>
-                <div className="col-3">
-                  <Field
-                    component={Checkbox}
-                    name="hasNimble"
-                    label="Nimble"
-                    disabled={values.hasBattleForged}
-                  />
-
-                  {values.hasNimble &&
-                    <div className="mt-20">
-                      <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
-                    </div>
-                  }
-                </div>
-                <div className="col-3">
+                <div className="col-3 d-flex align-items-center">
                   <Field
                     component={Checkbox}
                     name="hasBattleForged"
                     label="Battle Forged"
                     disabled={values.hasNimble}
                   />
+                  {values.hasBattleForged && values.startArmor && values.startHelm &&
+                    <div className="app__perk-value ml-10">
+                      {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
+                    </div>
+                  }
+                </div>
+                <div className="col-3 d-flex align-items-center">
+                  <Field
+                    component={Checkbox}
+                    name="hasNimble"
+                    label="Nimble"
+                    disabled={values.hasBattleForged}
+                  />
+                  {values.hasNimble &&
+                    <div className="app__perk-value ml-10">
+                      {round((1 - getNimbleDmgReduction(values.totalFtg)), 2)}
+                    </div>
+                  }
+                </div>
+                <div className="col-3">
+                  {values.hasNimble &&
+                    <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
+                  }
                 </div>
               </div>
 

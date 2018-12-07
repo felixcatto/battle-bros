@@ -9,6 +9,11 @@ extends:
   - 'airbnb-base'
   - 'plugin:react/recommended'
 
+settings:
+  import/resolver: webpack
+  react:
+    version: '16.6.0'
+
 rules:
   no-console: 1
   consistent-return: 1

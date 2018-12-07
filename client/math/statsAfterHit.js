@@ -1,4 +1,4 @@
-const getNimbleDmgReduction = (totalFtg) => {
+export const getNimbleDmgReduction = (totalFtg) => {
   let rawNibleReduction;
   if (totalFtg <= 5) {
     rawNibleReduction = totalFtg;
@@ -15,6 +15,8 @@ const getNimbleDmgReduction = (totalFtg) => {
   }
   return (rawNibleReduction + 25) / 100;
 };
+
+export const getBFDmgReduction = (armor, help) => 1 - (armor + help) * 0.01 * 0.05;
 
 const noPerk = (options) => {
   const {
@@ -136,7 +138,7 @@ const BF = (options) => {
     ? 1.5
     : 1;
 
-  const bfModifier = 1 - (struckArmorPart + oppositeArmorPart) * 0.01 * 0.05;
+  const bfModifier = getBFDmgReduction(struckArmorPart, oppositeArmorPart);
   const vsAPercent = bfModifier * options.vsAPercent;
 
   const maxDmgNoPenetrationOverkill = Math.ceil(
