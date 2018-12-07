@@ -16,7 +16,7 @@ import Checkbox from './Checkbox';
 
 const validationSchema = Yup.object().shape({
   startHp: Yup.number()
-    .min(0)
+    .min(1)
     .max(500)
     .required('Required'),
   startArmor: Yup.number()
@@ -40,7 +40,7 @@ const validationSchema = Yup.object().shape({
     .max(2)
     .required('Required'),
   vsArmorPercent: Yup.number()
-    .min(0)
+    .min(0.1)
     .max(4)
     .required('Required'),
   hasSteelBrow: Yup.boolean(),
@@ -94,6 +94,7 @@ class App extends React.Component {
   }
 
   state = {
+    isTestMode: true,
     EHP: null,
     logs: [],
     selectedWeapon: null,
@@ -110,28 +111,31 @@ class App extends React.Component {
     setFieldValue('vsArmorPercent', vsArmorPercent);
   }
 
+  onTestModeChange = (e) => {
+    const { checked } = e.target;
+    this.setState({ isTestMode: checked });
+  }
+
   onSubmit = async (e) => {
     e.preventDefault();
     const { setTouched, values, validateForm } = this.props;
-    Object.keys(values)
-      .reduce((acc, key) => ({ ...acc, [key]: true }), {})
-      |> setTouched;
+    const allTouched = Object.keys(values)
+      .reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    setTouched(allTouched);
 
     const errors = await validateForm();
 
     if (!isEmpty(errors)) return;
 
-    if (values.isTestMode) {
+    if (this.state.isTestMode) {
       const stats = getEHPStats(values);
       this.setState({
-        isTestMode: true,
         EHP: stats.totalEHP.toFixed(1),
         logs: stats.logs,
       });
     } else {
       const totalEHP = getAverageEHP(values);
       this.setState({
-        isTestMode: false,
         EHP: totalEHP.toFixed(1),
       });
     }
@@ -249,11 +253,16 @@ class App extends React.Component {
                 name="countOfTests"
                 label="Count Of Tests"
                 type="number"
-                disabled={values.isTestMode}
+                disabled={isTestMode}
               />
             </div>
             <div className="col-3">
-              <Field component={Checkbox} name="isTestMode" label="Test Mode" />
+              <Checkbox
+                name="isTestMode"
+                label="Test Mode"
+                field={{ value: isTestMode }}
+                onChange={this.onTestModeChange}
+              />
             </div>
           </div>
 
