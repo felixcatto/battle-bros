@@ -1,4 +1,4 @@
-import { getAverageEHP } from '../client/math';
+import { getAverageStats } from '../client/math';
 
 
 const getRandomFunc = () => {
@@ -8,6 +8,8 @@ const getRandomFunc = () => {
     return i % 4 === 0 ? 1 : 0; // armor armor armor helm...
   };
 };
+
+const getAverageEHP = options => getAverageStats(options).totalEHP;
 
 
 test('simple ehp test (Steelbrow)', () => {

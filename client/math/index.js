@@ -16,6 +16,8 @@ export const getEHPStats = (options) => {
 
   const getStatsAfterHit = configureStatsAfterHit(options);
   const stats = {
+    totalEHP: 0,
+    totalHits: 0,
     logs: [],
   };
 
@@ -44,6 +46,10 @@ export const getEHPStats = (options) => {
       });
 
       const newTotalEHP = totalEHP + afterHit.ehp;
+      stats.totalHits += afterHit.ehp === dmgPerHit
+        ? 1
+        : afterHit.ehp / dmgPerHit;
+
       if (afterHit.hp === 0) {
         stats.totalEHP = newTotalEHP;
         return stats;
@@ -74,6 +80,10 @@ export const getEHPStats = (options) => {
       });
 
       const newTotalEHP = totalEHP + afterHit.ehp;
+      stats.totalHits += afterHit.ehp === dmgPerHit
+        ? 1
+        : afterHit.ehp / dmgPerHit;
+
       if (afterHit.hp === 0) {
         stats.totalEHP = newTotalEHP;
         return stats;
@@ -87,14 +97,17 @@ export const getEHPStats = (options) => {
 };
 
 
-const getAverageEHP = (options) => {
+export const getAverageStats = (options) => {
   const { countOfTests = 50000 } = options;
 
-  const sumOfEHP = [...Array(countOfTests).keys()]
-    .map(() => getEHPStats(options).totalEHP)
-    .reduce((acc, num) => acc + num, 0);
-  return sumOfEHP / countOfTests;
+  return [...Array(countOfTests).keys()]
+    .map(() => getEHPStats(options))
+    .reduce(({ totalEHP = 0, totalHits = 0 }, stats) => ({
+      totalEHP: totalEHP + stats.totalEHP,
+      totalHits: totalHits + stats.totalHits,
+    }), {})
+    |> (x => ({
+      totalEHP: x.totalEHP / countOfTests,
+      totalHits: x.totalHits / countOfTests,
+    }));
 };
-
-
-export { getAverageEHP };

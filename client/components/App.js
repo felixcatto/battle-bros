@@ -9,7 +9,7 @@ import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
 import weaponsList from 'Lib/weaponsList';
-import { getAverageEHP, getEHPStats } from '../math';
+import { getAverageStats, getEHPStats } from '../math';
 import { getNimbleDmgReduction, getBFDmgReduction } from '../math/statsAfterHit';
 import Checkbox from './Checkbox';
 
@@ -94,8 +94,9 @@ class App extends React.Component {
   }
 
   state = {
-    isTestMode: true,
+    isTestMode: false,
     EHP: null,
+    totalHits: null,
     logs: [],
     selectedWeapon: null,
   }
@@ -128,22 +129,24 @@ class App extends React.Component {
     if (!isEmpty(errors)) return;
 
     if (this.state.isTestMode) {
-      const stats = getEHPStats(values);
+      const { totalHits, totalEHP, logs } = getEHPStats(values);
       this.setState({
-        EHP: stats.totalEHP.toFixed(1),
-        logs: stats.logs,
+        EHP: round(totalEHP, 1),
+        totalHits: round(totalHits, 2),
+        logs,
       });
     } else {
-      const totalEHP = getAverageEHP(values);
+      const { totalHits, totalEHP } = getAverageStats(values);
       this.setState({
-        EHP: totalEHP.toFixed(1),
+        EHP: round(totalEHP, 1),
+        totalHits: round(totalHits, 2),
       });
     }
   }
 
   render() {
     const {
-      isTestMode, EHP, logs, selectedWeapon,
+      isTestMode, EHP, totalHits, logs, selectedWeapon,
     } = this.state;
     const { isSubmitting, values } = this.props;
 
@@ -275,6 +278,12 @@ class App extends React.Component {
         {EHP &&
           <div className="mt-20">
             EHP: {EHP}
+          </div>
+        }
+
+        {totalHits &&
+          <div className="mt-20">
+            Total Hits: {totalHits}
           </div>
         }
 
