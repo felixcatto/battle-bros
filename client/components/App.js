@@ -9,8 +9,8 @@ import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
 import { weaponsList, characterList } from 'Lib/presets';
-import { getAverageStats, getEHPStats } from '../math';
-import { getNimbleDmgReduction, getBFDmgReduction } from '../math/statsAfterHit';
+import { getAverageStats, getEHPStats } from 'Lib/math';
+import { getNimbleDmgReduction, getBFDmgReduction } from 'Lib/math/statsAfterHit';
 import Checkbox from './Checkbox';
 
 
@@ -67,7 +67,7 @@ const formikEnhancer = withFormik({
     startHp: 65,
     startArmor: '',
     startHelm: '',
-    countOfTests: 50000,
+    countOfTests: 30000,
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
@@ -211,7 +211,7 @@ class App extends React.Component {
         <form onSubmit={this.onSubmit}>
 
           <h4>Character</h4>
-          <div className="row mb-30">
+          <div className="row mb-35">
             <div className="col-3">
               <div>Character Preset</div>
               <Select
@@ -233,7 +233,7 @@ class App extends React.Component {
           </div>
 
           <h4>Weapon</h4>
-          <div className="row mb-30">
+          <div className="row mb-20">
             <div className="col-3">
               <div>Weapon Preset</div>
               <Select
@@ -245,7 +245,7 @@ class App extends React.Component {
             </div>
           </div>
 
-          <div className="row mb-30">
+          <div className="row mb-35">
             <div className="col-3">
               <Field
                 component={CommonField}
@@ -278,7 +278,7 @@ class App extends React.Component {
           </div>
 
           <h4 className="mb-0">Perks</h4>
-          <div className="app__mix-row row align-items-center mb-20">
+          <div className="app__mix-row row align-items-center">
             <div className="col-3">
               <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
             </div>

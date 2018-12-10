@@ -1,4 +1,4 @@
-import { getAverageStats } from '../client/math';
+import { getAverageStats } from '../lib/math';
 
 
 const getRandomFunc = () => {
