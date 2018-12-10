@@ -22,75 +22,40 @@ export const getEHPStats = (options) => {
   };
 
   const makeHit = (armor, helm, hp, totalEHP) => {
-    const chance = getRandomNum();
+    const isHitToHead = getRandomNum() >= 0.75;
+    const afterHitOptions = {
+      helm,
+      armor,
+      hp,
+      struckPartName: isHitToHead ? 'head' : 'body',
+      dmg: dmgPerHit,
+      vsAPercent: vsArmorPercent,
+      APRPercent: armorPiercingPercent,
+      totalFtg,
+      hasSteelBrow,
+    };
 
-    if (chance >= 0.75) {
-      const afterHit = getStatsAfterHit({
-        struckArmorPart: helm,
-        oppositeArmorPart: armor,
-        hp,
-        struckPartName: 'head',
-        dmg: dmgPerHit,
-        vsAPercent: vsArmorPercent,
-        APRPercent: armorPiercingPercent,
-        totalFtg,
-        hasSteelBrow,
-      });
+    const afterHit = getStatsAfterHit(afterHitOptions);
 
-      stats.logs.push({
-        ehp: afterHit.ehp,
-        hp: afterHit.hp,
-        armor,
-        helm: afterHit.struckArmorPart,
-        struckPartName: 'head',
-      });
+    stats.logs.push({
+      ehp: afterHit.ehp,
+      hp: afterHit.hp,
+      armor: afterHit.armor,
+      helm: afterHit.helm,
+      struckPartName: afterHitOptions.struckPartName,
+    });
 
-      const newTotalEHP = totalEHP + afterHit.ehp;
-      stats.totalHits += afterHit.ehp === dmgPerHit
-        ? 1
-        : afterHit.ehp / dmgPerHit;
+    const newTotalEHP = totalEHP + afterHit.ehp;
+    stats.totalHits += afterHit.ehp === dmgPerHit
+      ? 1
+      : afterHit.ehp / dmgPerHit;
 
-      if (afterHit.hp === 0) {
-        stats.totalEHP = newTotalEHP;
-        return stats;
-      }
-
-      return makeHit(armor, afterHit.struckArmorPart, afterHit.hp, newTotalEHP);
+    if (afterHit.hp === 0) {
+      stats.totalEHP = newTotalEHP;
+      return stats;
     }
 
-    if (chance < 0.75) {
-      const afterHit = getStatsAfterHit({
-        struckArmorPart: armor,
-        oppositeArmorPart: helm,
-        hp,
-        struckPartName: 'body',
-        dmg: dmgPerHit,
-        vsAPercent: vsArmorPercent,
-        APRPercent: armorPiercingPercent,
-        totalFtg,
-        hasSteelBrow,
-      });
-
-      stats.logs.push({
-        ehp: afterHit.ehp,
-        hp: afterHit.hp,
-        armor: afterHit.struckArmorPart,
-        helm,
-        struckPartName: 'body',
-      });
-
-      const newTotalEHP = totalEHP + afterHit.ehp;
-      stats.totalHits += afterHit.ehp === dmgPerHit
-        ? 1
-        : afterHit.ehp / dmgPerHit;
-
-      if (afterHit.hp === 0) {
-        stats.totalEHP = newTotalEHP;
-        return stats;
-      }
-
-      return makeHit(afterHit.struckArmorPart, helm, afterHit.hp, newTotalEHP);
-    }
+    return makeHit(afterHit.armor, afterHit.helm, afterHit.hp, newTotalEHP);
   };
 
   return makeHit(startArmor, startHelm, startHp, 0);

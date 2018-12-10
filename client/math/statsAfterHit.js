@@ -20,7 +20,8 @@ export const getBFDmgReduction = (armor, help) => 1 - (armor + help) * 0.01 * 0.
 
 const noPerk = (options) => {
   const {
-    struckArmorPart,
+    armor,
+    helm,
     hp,
     struckPartName,
     dmg,
@@ -29,6 +30,7 @@ const noPerk = (options) => {
     hasSteelBrow,
   } = options;
 
+  const struckArmorPart = struckPartName === 'head' ? helm : armor;
   const headDmgModifier = struckPartName === 'head' && !hasSteelBrow
     ? 1.5
     : 1;
@@ -53,16 +55,21 @@ const noPerk = (options) => {
   );
   const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
 
+  const newBodyArmor = struckPartName === 'head' ? armor : newArmor;
+  const newHelm = struckPartName === 'head' ? newArmor : helm;
+
   if (newHp <= 0) {
     return {
-      struckArmorPart: newArmor,
+      armor: newBodyArmor,
+      helm: newHelm,
       hp: 0,
       ehp: armorDmgBeforeBF + armorOverkill,
     };
   }
 
   return {
-    struckArmorPart: newArmor,
+    armor: newBodyArmor,
+    helm: newHelm,
     hp: newHp,
     ehp: dmg,
   };
@@ -71,7 +78,8 @@ const noPerk = (options) => {
 
 const NMBL = (options) => {
   const {
-    struckArmorPart,
+    armor,
+    helm,
     hp,
     struckPartName,
     dmg,
@@ -82,6 +90,7 @@ const NMBL = (options) => {
   } = options;
 
   const nimbleDmgReduction = getNimbleDmgReduction(totalFtg);
+  const struckArmorPart = struckPartName === 'head' ? helm : armor;
   const headDmgModifier = struckPartName === 'head' && !hasSteelBrow
     ? 1.5
     : 1;
@@ -107,16 +116,21 @@ const NMBL = (options) => {
   );
   const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier * nimbleDmgReduction);
 
+  const newBodyArmor = struckPartName === 'head' ? armor : newArmor;
+  const newHelm = struckPartName === 'head' ? newArmor : helm;
+
   if (newHp <= 0) {
     return {
-      struckArmorPart: newArmor,
+      armor: newBodyArmor,
+      helm: newHelm,
       hp: 0,
       ehp: armorDmgBeforeBF + armorOverkill,
     };
   }
 
   return {
-    struckArmorPart: newArmor,
+    armor: newBodyArmor,
+    helm: newHelm,
     hp: newHp,
     ehp: dmg,
   };
@@ -125,8 +139,8 @@ const NMBL = (options) => {
 
 const BF = (options) => {
   const {
-    struckArmorPart,
-    oppositeArmorPart,
+    armor,
+    helm,
     hp,
     struckPartName,
     dmg,
@@ -134,11 +148,12 @@ const BF = (options) => {
     hasSteelBrow,
   } = options;
 
+  const struckArmorPart = struckPartName === 'head' ? helm : armor;
   const headDmgModifier = struckPartName === 'head' && !hasSteelBrow
     ? 1.5
     : 1;
 
-  const bfModifier = getBFDmgReduction(struckArmorPart, oppositeArmorPart);
+  const bfModifier = getBFDmgReduction(armor, helm);
   const vsAPercent = bfModifier * options.vsAPercent;
 
   const maxDmgNoPenetrationOverkill = Math.ceil(
@@ -161,16 +176,21 @@ const BF = (options) => {
   );
   const newHp = hp - APRDmg - Math.floor(armorOverkill * headDmgModifier);
 
+  const newBodyArmor = struckPartName === 'head' ? armor : newArmor;
+  const newHelm = struckPartName === 'head' ? newArmor : helm;
+
   if (newHp <= 0) {
     return {
-      struckArmorPart: newArmor,
+      armor: newBodyArmor,
+      helm: newHelm,
       hp: 0,
       ehp: armorDmgBeforeBF + armorOverkill,
     };
   }
 
   return {
-    struckArmorPart: newArmor,
+    armor: newBodyArmor,
+    helm: newHelm,
     hp: newHp,
     ehp: dmg,
   };

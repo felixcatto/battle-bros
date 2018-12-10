@@ -16,7 +16,6 @@ settings:
 
 rules:
   no-console: 1
-  consistent-return: 1
   max-len: 1
   import/prefer-default-export: 0
   operator-linebreak: 0
