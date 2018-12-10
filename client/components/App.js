@@ -69,6 +69,7 @@ const formikEnhancer = withFormik({
     hasNimble: false,
     hasBattleForged: false,
     totalFtg: 0,
+    isTestMode: false,
   }),
   displayName: 'MyForm',
 });
@@ -94,7 +95,6 @@ class App extends React.Component {
   }
 
   state = {
-    isTestMode: false,
     EHP: null,
     totalHits: null,
     logs: [],
@@ -112,11 +112,6 @@ class App extends React.Component {
     setFieldValue('vsArmorPercent', vsArmorPercent);
   }
 
-  onTestModeChange = (e) => {
-    const { checked } = e.target;
-    this.setState({ isTestMode: checked });
-  }
-
   onSubmit = async (e) => {
     e.preventDefault();
     const { setTouched, values, validateForm } = this.props;
@@ -128,7 +123,7 @@ class App extends React.Component {
 
     if (!isEmpty(errors)) return;
 
-    if (this.state.isTestMode) {
+    if (values.isTestMode) {
       const { totalHits, totalEHP, logs } = getEHPStats(values);
       this.setState({
         EHP: round(totalEHP, 1),
@@ -146,7 +141,7 @@ class App extends React.Component {
 
   render() {
     const {
-      isTestMode, EHP, totalHits, logs, selectedWeapon,
+      EHP, totalHits, logs, selectedWeapon,
     } = this.state;
     const { isSubmitting, values } = this.props;
 
@@ -256,15 +251,14 @@ class App extends React.Component {
                 name="countOfTests"
                 label="Count Of Tests"
                 type="number"
-                disabled={isTestMode}
+                disabled={values.isTestMode}
               />
             </div>
             <div className="col-3">
-              <Checkbox
+              <Field
+                component={Checkbox}
                 name="isTestMode"
                 label="Test Mode"
-                field={{ value: isTestMode }}
-                onChange={this.onTestModeChange}
               />
             </div>
           </div>
@@ -287,7 +281,7 @@ class App extends React.Component {
           </div>
         }
 
-        {isTestMode && !isEmpty(logs) &&
+        {values.isTestMode && !isEmpty(logs) &&
           <div className="mt-20">
             <div>*********</div>
             {logs.map((el, i) => (
