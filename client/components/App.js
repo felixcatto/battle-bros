@@ -57,6 +57,8 @@ const validationSchema = Yup.object().shape({
       ? schema.required('Required')
       : schema
     )),
+  hasNineLive: Yup.boolean(),
+  hasColossus: Yup.boolean(),
   hasDoubleGrip: Yup.boolean(),
   hasDuelist: Yup.boolean(),
 });
@@ -76,6 +78,8 @@ const formikEnhancer = withFormik({
     hasNimble: false,
     hasBattleForged: false,
     totalFtg: 0,
+    hasNineLive: false,
+    hasColossus: false,
     hasDoubleGrip: false,
     hasDuelist: false,
     isTestMode: false,
@@ -142,6 +146,17 @@ class App extends React.Component {
     Object.keys(selectedCharacter.value)
       .filter(key => availableOptions.includes(key))
       .forEach(key => setFieldValue(key, selectedCharacter.value[key], false));
+  }
+
+  onColossusChange = (e) => {
+    const { handleChange, setFieldValue, values } = this.props;
+    if (values.hasColossus) {
+      setFieldValue('startHp', Math.round(values.startHp / 1.25));
+    } else {
+      setFieldValue('startHp', Math.round(values.startHp * 1.25));
+    }
+
+    handleChange(e);
   }
 
   onDoubleGripChange = (e) => {
@@ -278,7 +293,7 @@ class App extends React.Component {
           </div>
 
           <h4 className="mb-0">Perks</h4>
-          <div className="app__mix-row row align-items-center">
+          <div className="app__mix-row row align-items-center mb-15">
             <div className="col-3">
               <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
             </div>
@@ -316,6 +331,21 @@ class App extends React.Component {
           </div>
 
           <div className="row mb-30">
+            <div className="col-3">
+              <Field
+                component={Checkbox}
+                name="hasNineLive"
+                label="Nine Live"
+              />
+            </div>
+            <div className="col-3">
+              <Field
+                name="hasColossus"
+                render={({ field }) => (
+                  <Checkbox field={field} label="Colossus" onChange={this.onColossusChange} />
+                )}
+              />
+            </div>
             <div className="col-3">
               <Field
                 name="hasDoubleGrip"

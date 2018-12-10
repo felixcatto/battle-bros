@@ -318,3 +318,22 @@ test('(noPerk) chanceToHitHead 0.5', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(146);
 });
+
+
+test('(Nine Live)', () => {
+  const options = {
+    startHp: 40,
+    startArmor: 60,
+    startHelm: 60,
+    dmgPerHit: 40,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasNineLive: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(141);
+});
