@@ -3,12 +3,13 @@ import React from 'react';
 
 
 const Checkbox = ({ field, form, ...props }) => (
-  <label className="checkbox d-flex align-items-center">
+  <label className="checkbox d-inline-flex align-items-center">
     <input
       type="checkbox"
       className="checkbox__input"
       {...field}
-      {...props}
+      disabled={props.disabled}
+      onChange={props.onChange ? props.onChange : field.onChange}
       checked={field.value}
     />
     <div className="checkbox__visual-box">

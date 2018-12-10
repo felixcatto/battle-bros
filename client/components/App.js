@@ -48,8 +48,8 @@ const validationSchema = Yup.object().shape({
     .max(1)
     .required('Required'),
   hasSteelBrow: Yup.boolean(),
-  hasNimble: Yup.boolean(),
   hasBattleForged: Yup.boolean(),
+  hasNimble: Yup.boolean(),
   totalFtg: Yup.number()
     .min(0)
     .max(500)
@@ -57,6 +57,8 @@ const validationSchema = Yup.object().shape({
       ? schema.required('Required')
       : schema
     )),
+  hasDoubleGrip: Yup.boolean(),
+  hasDuelist: Yup.boolean(),
 });
 
 const formikEnhancer = withFormik({
@@ -74,6 +76,8 @@ const formikEnhancer = withFormik({
     hasNimble: false,
     hasBattleForged: false,
     totalFtg: 0,
+    hasDoubleGrip: false,
+    hasDuelist: false,
     isTestMode: false,
   }),
   displayName: 'MyForm',
@@ -102,6 +106,7 @@ class App extends React.Component {
     setFieldValue: PropTypes.any.isRequired,
     isSubmitting: PropTypes.any.isRequired,
     values: PropTypes.any.isRequired,
+    handleChange: PropTypes.any.isRequired,
   }
 
   state = {
@@ -137,6 +142,28 @@ class App extends React.Component {
     Object.keys(selectedCharacter.value)
       .filter(key => availableOptions.includes(key))
       .forEach(key => setFieldValue(key, selectedCharacter.value[key], false));
+  }
+
+  onDoubleGripChange = (e) => {
+    const { handleChange, setFieldValue, values } = this.props;
+    if (values.hasDoubleGrip) {
+      setFieldValue('dmgPerHit', Math.round(values.dmgPerHit / 1.25));
+    } else {
+      setFieldValue('dmgPerHit', Math.round(values.dmgPerHit * 1.25));
+    }
+
+    handleChange(e);
+  }
+
+  onDuelistChange = (e) => {
+    const { handleChange, setFieldValue, values } = this.props;
+    if (values.hasDuelist) {
+      setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent - 0.25, 2));
+    } else {
+      setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent + 0.25, 2));
+    }
+
+    handleChange(e);
   }
 
   onSubmit = async (e) => {
@@ -285,6 +312,25 @@ class App extends React.Component {
               {values.hasNimble &&
                 <Field component={CommonField} name="totalFtg" label="Total Fatigue" type="number" />
               }
+            </div>
+          </div>
+
+          <div className="row mb-30">
+            <div className="col-3">
+              <Field
+                name="hasDoubleGrip"
+                render={({ field }) => (
+                  <Checkbox field={field} label="Double Grip" onChange={this.onDoubleGripChange} />
+                )}
+              />
+            </div>
+            <div className="col-3">
+              <Field
+                name="hasDuelist"
+                render={({ field }) => (
+                  <Checkbox field={field} label="Duelist" onChange={this.onDuelistChange} />
+                )}
+              />
             </div>
           </div>
 
