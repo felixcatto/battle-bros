@@ -11,6 +11,7 @@ export const getEHPStats = (options) => {
     armorPiercingPercent,
     totalFtg,
     hasSteelBrow,
+    chanceToHitHead,
     getRandomNum = Math.random,
   } = options;
 
@@ -22,7 +23,7 @@ export const getEHPStats = (options) => {
   };
 
   const makeHit = (armor, helm, hp, totalEHP) => {
-    const isHitToHead = getRandomNum() >= 0.75;
+    const isHitToHead = getRandomNum() >= 1 - chanceToHitHead;
     const afterHitOptions = {
       helm,
       armor,

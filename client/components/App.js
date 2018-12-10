@@ -43,6 +43,10 @@ const validationSchema = Yup.object().shape({
     .min(0.1)
     .max(4)
     .required('Required'),
+  chanceToHitHead: Yup.number()
+    .min(0)
+    .max(1)
+    .required('Required'),
   hasSteelBrow: Yup.boolean(),
   hasNimble: Yup.boolean(),
   hasBattleForged: Yup.boolean(),
@@ -65,6 +69,7 @@ const formikEnhancer = withFormik({
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: false,
     hasNimble: false,
     hasBattleForged: false,
@@ -233,6 +238,13 @@ class App extends React.Component {
               <Field component={CommonField}
                 name="vsArmorPercent"
                 label="vs Armor Percent"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="chanceToHitHead"
+                label="Chance To Hit Head"
                 type="number"
               />
             </div>

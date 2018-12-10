@@ -9,6 +9,14 @@ const getRandomFunc = () => {
   };
 };
 
+const getHeadRandomFunc = () => {
+  let i = 0;
+  return () => {
+    i += 1;
+    return i % 2 === 0 ? 1 : 0; // armor helm armor helm...
+  };
+};
+
 const getAverageEHP = options => getAverageStats(options).totalEHP;
 
 
@@ -20,6 +28,7 @@ test('simple ehp test (Steelbrow)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -38,6 +47,7 @@ test('simple ehp test (Steelbrow)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -56,6 +66,7 @@ test('low hp (Steelbrow)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -74,6 +85,7 @@ test('low hp (Steelbrow)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -92,6 +104,7 @@ test('vs armor 4 (Steelbrow)', () => {
     dmgPerHit: 50,
     armorPiercingPercent: 0,
     vsArmorPercent: 4,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -110,6 +123,7 @@ test('simple ehp test (noPerk)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -127,6 +141,7 @@ test('head test (noPerk)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -144,6 +159,7 @@ test('head overkill (noPerk)', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -161,6 +177,7 @@ test('vsArmorPercent 2 (noPerk)', () => {
     dmgPerHit: 50,
     armorPiercingPercent: 0,
     vsArmorPercent: 2,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -178,6 +195,7 @@ test('dmg vs armor - cruel falchion (noPerk)', () => {
     dmgPerHit: 35,
     armorPiercingPercent: 0.2,
     vsArmorPercent: 0.7,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -195,6 +213,7 @@ test('dmg vs armor - 2h hammer (noPerk)', () => {
     dmgPerHit: 95,
     armorPiercingPercent: 0.5,
     vsArmorPercent: 2,
+    chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
@@ -212,6 +231,7 @@ test('(Battle Forged) no armor overkill', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasBattleForged: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -230,6 +250,7 @@ test('(Battle Forged) cruel falchion', () => {
     dmgPerHit: 35,
     armorPiercingPercent: 0.2,
     vsArmorPercent: 0.7,
+    chanceToHitHead: 0.25,
     hasBattleForged: true,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
@@ -248,6 +269,7 @@ test('(Nimble) full powered', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasNimble: true,
     totalFtg: 0,
     getRandomNum: getRandomFunc(),
@@ -267,6 +289,7 @@ test('(Nimble) (Steelbrow) 13 ftg', () => {
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
     hasSteelBrow: true,
     hasNimble: true,
     totalFtg: 13,
@@ -276,4 +299,22 @@ test('(Nimble) (Steelbrow) 13 ftg', () => {
 
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(282);
+});
+
+
+test('(noPerk) chanceToHitHead 0.5', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 60,
+    startHelm: 60,
+    dmgPerHit: 40,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.5,
+    getRandomNum: getHeadRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(146);
 });
