@@ -8,7 +8,7 @@ import { isEmpty } from 'lodash';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
-import weaponsList from 'Lib/weaponsList';
+import { weaponsList, characterList } from 'Lib/presets';
 import { getAverageStats, getEHPStats } from '../math';
 import { getNimbleDmgReduction, getBFDmgReduction } from '../math/statsAfterHit';
 import Checkbox from './Checkbox';
@@ -87,6 +87,11 @@ const weaponOptions = weaponsList.map(el => ({
   label: el.name,
 }));
 
+const characterOptions = characterList.map(el => ({
+  value: el,
+  label: el.characterName,
+}));
+
 class App extends React.Component {
   static propTypes = {
     setFieldValue: PropTypes.any.isRequired,
@@ -99,17 +104,34 @@ class App extends React.Component {
     totalHits: null,
     logs: [],
     selectedWeapon: null,
+    selectedCharacter: null,
+  }
+
+  componentDidMount() {
+    const [heavyBro] = characterOptions;
+    setTimeout(() => this.onCharacterSelect(heavyBro), 50);
   }
 
   onWeaponSelect = (selectedWeapon) => {
     this.setState({ selectedWeapon });
     if (!selectedWeapon) return;
 
-    const { setFieldValue } = this.props;
-    const { dmg, armorPiercingPercent, vsArmorPercent } = selectedWeapon.value;
-    setFieldValue('dmgPerHit', dmg);
-    setFieldValue('armorPiercingPercent', armorPiercingPercent);
-    setFieldValue('vsArmorPercent', vsArmorPercent);
+    const { setFieldValue, values } = this.props;
+    const availableOptions = Object.keys(values);
+    Object.keys(selectedWeapon.value)
+      .filter(key => availableOptions.includes(key))
+      .forEach(key => setFieldValue(key, selectedWeapon.value[key], false));
+  }
+
+  onCharacterSelect = (selectedCharacter) => {
+    this.setState({ selectedCharacter });
+    if (!selectedCharacter) return;
+
+    const { setFieldValue, values } = this.props;
+    const availableOptions = Object.keys(values);
+    Object.keys(selectedCharacter.value)
+      .filter(key => availableOptions.includes(key))
+      .forEach(key => setFieldValue(key, selectedCharacter.value[key], false));
   }
 
   onSubmit = async (e) => {
@@ -141,7 +163,7 @@ class App extends React.Component {
 
   render() {
     const {
-      EHP, totalHits, logs, selectedWeapon,
+      EHP, totalHits, logs, selectedWeapon, selectedCharacter,
     } = this.state;
     const { isSubmitting, values } = this.props;
 
@@ -159,6 +181,15 @@ class App extends React.Component {
           <h4>Character</h4>
           <div className="row mb-30">
             <div className="col-3">
+              <div>Character Preset</div>
+              <Select
+                value={selectedCharacter}
+                onChange={this.onCharacterSelect}
+                options={characterOptions}
+                isClearable
+              />
+            </div>
+            <div className="col-3">
               <Field component={CommonField} name="startHp" label="HP" type="number" />
             </div>
             <div className="col-3">
@@ -172,6 +203,7 @@ class App extends React.Component {
           <h4>Weapon</h4>
           <div className="row mb-30">
             <div className="col-3">
+              <div>Weapon Preset</div>
               <Select
                 value={selectedWeapon}
                 onChange={this.onWeaponSelect}
@@ -269,7 +301,7 @@ class App extends React.Component {
 
         </form>
 
-        {EHP &&
+        {false && EHP &&
           <div className="mt-20">
             EHP: {EHP}
           </div>
