@@ -135,6 +135,8 @@ class App extends React.Component {
     Object.keys(selectedWeapon.value)
       .filter(key => availableOptions.includes(key))
       .forEach(key => setFieldValue(key, selectedWeapon.value[key], false));
+    setFieldValue('hasDuelist', false, false);
+    setFieldValue('hasDoubleGrip', false, false);
   }
 
   onCharacterSelect = (selectedCharacter) => {
