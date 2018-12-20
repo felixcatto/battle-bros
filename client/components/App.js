@@ -183,6 +183,17 @@ class App extends React.Component {
     handleChange(e);
   }
 
+  onTestModeChange = (e) => {
+    const { handleChange, setFieldValue, values } = this.props;
+    if (values.isTestMode) {
+      setFieldValue('countOfTests', 30000, false);
+    } else {
+      setFieldValue('countOfTests', 1, false);
+    }
+
+    handleChange(e);
+  }
+
   onSubmit = async (e) => {
     e.preventDefault();
     const { setTouched, values, validateForm } = this.props;
@@ -381,6 +392,7 @@ class App extends React.Component {
                 component={Checkbox}
                 name="isTestMode"
                 label="Test Mode"
+                onChange={this.onTestModeChange}
               />
             </div>
           </div>
