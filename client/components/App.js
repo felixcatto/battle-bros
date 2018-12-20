@@ -321,7 +321,7 @@ class App extends React.Component {
               />
               {values.hasNimble &&
                 <div className="app__perk-value ml-10">
-                  {round((1 - getNimbleDmgReduction(values.totalFtg)), 2)}
+                  {round(getNimbleDmgReduction(values.totalFtg), 2)}
                 </div>
               }
             </div>

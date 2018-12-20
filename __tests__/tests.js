@@ -263,42 +263,21 @@ test('(Battle Forged) cruel falchion', () => {
 
 test('(Nimble) full powered', () => {
   const options = {
-    startHp: 125,
-    startArmor: 30,
-    startHelm: 40,
-    dmgPerHit: 60,
+    startHp: 115,
+    startArmor: 95,
+    startHelm: 120,
+    dmgPerHit: 80,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
     hasNimble: true,
-    totalFtg: 0,
+    totalFtg: 15,
     getRandomNum: getRandomFunc(),
     countOfTests: 1,
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(512);
-});
-
-
-test('(Nimble) (Steelbrow) 13 ftg', () => {
-  const options = {
-    startHp: 60,
-    startArmor: 100,
-    startHelm: 90,
-    dmgPerHit: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSteelBrow: true,
-    hasNimble: true,
-    totalFtg: 13,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(282);
+  expect(ehp).toBe(487);
 });
 
 
