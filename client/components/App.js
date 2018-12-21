@@ -4,13 +4,13 @@ import {
   Field, ErrorMessage, withFormik,
 } from 'formik';
 import * as Yup from 'yup';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNumber } from 'lodash';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
 import { weaponsList, characterList } from 'Lib/presets';
 import { getAverageStats, getEHPStats } from 'Lib/math';
-import { getNimbleDmgReduction, getBFDmgReduction } from 'Lib/math/statsAfterHit';
+import { getNimbleDmgReduction, getBFDmgReduction } from 'Lib/math/utils';
 import Checkbox from './Checkbox';
 
 
@@ -61,6 +61,7 @@ const validationSchema = Yup.object().shape({
   hasColossus: Yup.boolean(),
   hasDoubleGrip: Yup.boolean(),
   hasDuelist: Yup.boolean(),
+  hasSplitMan: Yup.boolean(),
 });
 
 const formikEnhancer = withFormik({
@@ -69,7 +70,7 @@ const formikEnhancer = withFormik({
     startHp: 65,
     startArmor: '',
     startHelm: '',
-    countOfTests: 30000,
+    countOfTests: 20000,
     dmgPerHit: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
@@ -82,6 +83,7 @@ const formikEnhancer = withFormik({
     hasColossus: false,
     hasDoubleGrip: false,
     hasDuelist: false,
+    hasSplitMan: false,
     isTestMode: false,
   }),
   displayName: 'MyForm',
@@ -317,7 +319,7 @@ class App extends React.Component {
                 label="Battle Forged"
                 disabled={values.hasNimble}
               />
-              {values.hasBattleForged && values.startArmor && values.startHelm &&
+              {values.hasBattleForged && isNumber(values.startArmor) && isNumber(values.startHelm) &&
                 <div className="app__perk-value ml-10">
                   {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
                 </div>
@@ -377,6 +379,16 @@ class App extends React.Component {
             </div>
           </div>
 
+          <div className="row mb-30">
+            <div className="col-3">
+              <Field
+                component={Checkbox}
+                name="hasSplitMan"
+                label="Split Man"
+              />
+            </div>
+          </div>
+
           <div className="row align-items-center mb-30">
             <div className="col-3">
               <Field
@@ -424,7 +436,7 @@ class App extends React.Component {
                 <div>hp: {el.hp}</div>
                 <div>armor: {el.armor}</div>
                 <div>helm: {el.helm}</div>
-                <div>ehp: {el.ehp}</div>
+                <div>usedDmg: {el.usedDmg}</div>
                 <div>*********</div>
               </div>
             ))}

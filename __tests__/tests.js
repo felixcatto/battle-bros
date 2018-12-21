@@ -316,3 +316,60 @@ test('(Nine Live)', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(141);
 });
+
+
+test('(Split Man) body kill, with fisrt part', () => {
+  const options = {
+    startHp: 65,
+    startArmor: 200,
+    startHelm: 200,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSplitMan: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(201);
+});
+
+
+test('(Split Man) head kill, with fisrt part', () => {
+  const options = {
+    startHp: 180,
+    startArmor: 200,
+    startHelm: 150,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSplitMan: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(291);
+});
+
+
+test('(Split Man) head kill, with second part', () => {
+  const options = {
+    startHp: 200,
+    startArmor: 200,
+    startHelm: 150,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSplitMan: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(302);
+});
