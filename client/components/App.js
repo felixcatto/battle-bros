@@ -63,6 +63,7 @@ const validationSchema = Yup.object().shape({
   hasDuelist: Yup.boolean(),
   hasSplitMan: Yup.boolean(),
   hasCrossbowMastery: Yup.boolean(),
+  hasChop: Yup.boolean(),
 });
 
 const formikEnhancer = withFormik({
@@ -86,6 +87,7 @@ const formikEnhancer = withFormik({
     hasDuelist: false,
     hasSplitMan: false,
     hasCrossbowMastery: false,
+    hasChop: false,
     isTestMode: false,
   }),
   displayName: 'MyForm',
@@ -398,6 +400,13 @@ class App extends React.Component {
                 component={Checkbox}
                 name="hasSplitMan"
                 label="Split Man"
+              />
+            </div>
+            <div className="col-3">
+              <Field
+                component={Checkbox}
+                name="hasChop"
+                label="Chop"
               />
             </div>
             <div className="col-3">
