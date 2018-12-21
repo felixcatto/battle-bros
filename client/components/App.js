@@ -62,6 +62,7 @@ const validationSchema = Yup.object().shape({
   hasDoubleGrip: Yup.boolean(),
   hasDuelist: Yup.boolean(),
   hasSplitMan: Yup.boolean(),
+  hasCrossbowMastery: Yup.boolean(),
 });
 
 const formikEnhancer = withFormik({
@@ -84,6 +85,7 @@ const formikEnhancer = withFormik({
     hasDoubleGrip: false,
     hasDuelist: false,
     hasSplitMan: false,
+    hasCrossbowMastery: false,
     isTestMode: false,
   }),
   displayName: 'MyForm',
@@ -180,6 +182,17 @@ class App extends React.Component {
       setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent - 0.25, 2));
     } else {
       setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent + 0.25, 2));
+    }
+
+    handleChange(e);
+  }
+
+  onCrossbowMasteryChange = (e) => {
+    const { handleChange, setFieldValue, values } = this.props;
+    if (values.hasCrossbowMastery) {
+      setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent - 0.2, 2));
+    } else {
+      setFieldValue('armorPiercingPercent', round(values.armorPiercingPercent + 0.2, 2));
     }
 
     handleChange(e);
@@ -385,6 +398,18 @@ class App extends React.Component {
                 component={Checkbox}
                 name="hasSplitMan"
                 label="Split Man"
+              />
+            </div>
+            <div className="col-3">
+              <Field
+                name="hasCrossbowMastery"
+                render={({ field }) => (
+                  <Checkbox
+                    field={field}
+                    label="Crossbow Mastery"
+                    onChange={this.onCrossbowMasteryChange}
+                  />
+                )}
               />
             </div>
           </div>
