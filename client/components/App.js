@@ -4,6 +4,7 @@ import {
   Field, ErrorMessage, withFormik,
 } from 'formik';
 import * as Yup from 'yup';
+import { Popover, OverlayTrigger } from 'react-bootstrap';
 import { isEmpty, isNumber } from 'lodash';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
@@ -205,7 +206,7 @@ class App extends React.Component {
   onTestModeChange = (e) => {
     const { handleChange, setFieldValue, values } = this.props;
     if (values.isTestMode) {
-      setFieldValue('countOfTests', 30000, false);
+      setFieldValue('countOfTests', 20000, false);
     } else {
       setFieldValue('countOfTests', 1, false);
     }
@@ -410,6 +411,13 @@ class App extends React.Component {
                 name="hasChop"
                 label="Chop"
               />
+              <OverlayTrigger trigger="hover" placement="right" overlay={(
+                <Popover>
+                  50% additional damage to HP on a hit to the head
+                </Popover>
+              )}>
+                <i className="far fa-question-circle app__tooltip ml-5"></i>
+              </OverlayTrigger>
             </div>
             <div className="col-3">
               <Field
@@ -417,6 +425,13 @@ class App extends React.Component {
                 name="hasBatter"
                 label="Batter"
               />
+              <OverlayTrigger trigger="hover" placement="right" overlay={(
+                <Popover>
+                  Always inflicts at least 10 HP damage, regardless of current armor
+                </Popover>
+              )}>
+                <i className="far fa-question-circle app__tooltip ml-5"></i>
+              </OverlayTrigger>
             </div>
             <div className="col-3">
               <Field

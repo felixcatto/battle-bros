@@ -90,4 +90,12 @@ body {
   &__perk-value {
     font-size: 13px;
   }
+  &__tooltip {
+    padding: 5px;
+    font-size: 13px;
+    display: inline-block;
+    vertical-align: top;
+    color: #007bff;
+    cursor: help;
+  }
 }
