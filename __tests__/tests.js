@@ -392,3 +392,41 @@ test('(Chop)', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(303);
 });
+
+
+test('(Batter) no real use of it', () => {
+  const options = {
+    startHp: 100,
+    startArmor: 180,
+    startHelm: 180,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasBatter: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(238);
+});
+
+
+test('(Batter)', () => {
+  const options = {
+    startHp: 100,
+    startArmor: 180,
+    startHelm: 180,
+    dmgPerHit: 40,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasBatter: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(264);
+});
