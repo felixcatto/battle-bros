@@ -400,6 +400,7 @@ class App extends React.Component {
                 component={Checkbox}
                 name="hasSplitMan"
                 label="Split Man"
+                disabled={values.hasChop}
               />
             </div>
             <div className="col-3">
@@ -407,6 +408,7 @@ class App extends React.Component {
                 component={Checkbox}
                 name="hasChop"
                 label="Chop"
+                disabled={values.hasSplitMan}
               />
             </div>
             <div className="col-3">

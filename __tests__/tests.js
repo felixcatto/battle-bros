@@ -373,3 +373,22 @@ test('(Split Man) head kill, with second part', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(302);
 });
+
+
+test('(Chop)', () => {
+  const options = {
+    startHp: 100,
+    startArmor: 200,
+    startHelm: 200,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.5,
+    hasChop: true,
+    getRandomNum: getHeadRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(303);
+});
