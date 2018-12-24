@@ -277,7 +277,7 @@ test('(Nimble) full powered', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(487);
+  expect(ehp).toBe(415);
 });
 
 
