@@ -98,4 +98,10 @@ body {
     color: #007bff;
     cursor: help;
   }
+  &__saved-result {
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }

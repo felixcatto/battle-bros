@@ -92,6 +92,7 @@ const formikEnhancer = withFormik({
     hasChop: false,
     hasBatter: false,
     isTestMode: false,
+    isSaveMode: false,
   }),
   displayName: 'MyForm',
 });
@@ -123,11 +124,12 @@ class App extends React.Component {
   }
 
   state = {
-    EHP: null,
+    totalUsedDmg: null,
     totalHits: null,
     logs: [],
     selectedWeapon: null,
     selectedCharacter: null,
+    savedResults: [],
   }
 
   componentDidMount() {
@@ -214,6 +216,10 @@ class App extends React.Component {
     handleChange(e);
   }
 
+  onClearSavedResults = () => {
+    this.setState({ savedResults: [] });
+  }
+
   onSubmit = async (e) => {
     e.preventDefault();
     const { setTouched, values, validateForm } = this.props;
@@ -227,15 +233,32 @@ class App extends React.Component {
 
     if (values.isTestMode) {
       const { totalHits, totalEHP, logs } = getEHPStats(values);
+
       this.setState({
-        EHP: round(totalEHP, 1),
+        totalUsedDmg: round(totalEHP, 1),
         totalHits: round(totalHits, 2),
         logs,
       });
+    } else if (values.isSaveMode) {
+      const { totalHits, totalEHP } = getAverageStats(values);
+      const { selectedWeapon, savedResults } = this.state;
+      const newResult = {
+        weaponLabel: selectedWeapon?.label || '?',
+        totalHits: round(totalHits, 2),
+        hasDoubleGrip: values.hasDoubleGrip,
+        hasDuelist: values.hasDuelist,
+      };
+
+      this.setState({
+        totalUsedDmg: round(totalEHP, 1),
+        totalHits: round(totalHits, 2),
+        savedResults: savedResults.concat(newResult),
+      });
     } else {
       const { totalHits, totalEHP } = getAverageStats(values);
+
       this.setState({
-        EHP: round(totalEHP, 1),
+        totalUsedDmg: round(totalEHP, 1),
         totalHits: round(totalHits, 2),
       });
     }
@@ -243,7 +266,7 @@ class App extends React.Component {
 
   render() {
     const {
-      EHP, totalHits, logs, selectedWeapon, selectedCharacter,
+      totalUsedDmg, totalHits, logs, selectedWeapon, selectedCharacter, savedResults,
     } = this.state;
     const { isSubmitting, values } = this.props;
 
@@ -465,41 +488,72 @@ class App extends React.Component {
                 onChange={this.onTestModeChange}
               />
             </div>
+            <div className="col-3">
+              <Field
+                component={Checkbox}
+                name="isSaveMode"
+                label="Save Results"
+              />
+            </div>
           </div>
 
-          <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-            Calculate
-          </button>
+          <div className="d-flex">
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              Calculate
+            </button>
+            {values.isSaveMode &&
+              <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
+                Clear Results
+              </button>
+            }
+          </div>
 
         </form>
 
-        {false && EHP &&
-          <div className="mt-20">
-            EHP: {EHP}
-          </div>
-        }
-
-        {totalHits &&
-          <div className="mt-20">
-            Total Hits: {totalHits}
-          </div>
-        }
-
-        {values.isTestMode && !isEmpty(logs) &&
-          <div className="mt-20">
-            <div>*********</div>
-            {logs.map((el, i) => (
-              <div key={i}>
-                <div>hit to: {el.struckPartName}</div>
-                <div>hp: {el.hp}</div>
-                <div>armor: {el.armor}</div>
-                <div>helm: {el.helm}</div>
-                <div>usedDmg: {el.usedDmg}</div>
-                <div>*********</div>
+        <div className="row">
+          <div className="col-6">
+            {false && totalUsedDmg &&
+              <div className="mt-20">
+                Total Used Dmg: {totalUsedDmg}
               </div>
-            ))}
+            }
+            {totalHits &&
+              <div className="mt-20">
+                Total Hits: {totalHits}
+              </div>
+            }
+            {values.isTestMode && !isEmpty(logs) &&
+              <div className="mt-20">
+                <div>*********</div>
+                {logs.map((el, i) => (
+                  <div key={i}>
+                    <div>hit to: {el.struckPartName}</div>
+                    <div>hp: {el.hp}</div>
+                    <div>armor: {el.armor}</div>
+                    <div>helm: {el.helm}</div>
+                    <div>usedDmg: {el.usedDmg}</div>
+                    <div>*********</div>
+                  </div>
+                ))}
+              </div>
+            }
           </div>
-        }
+          <div className="col-6">
+            {savedResults.map((el, i) => {
+              const doubleGripTip = el.hasDoubleGrip ? ' (DG)' : '';
+              const duelistTip = el.hasDuelist ? ' (D)' : '';
+              return (
+                <div className="app__saved-result" key={i}>
+                  <span><b>{el.weaponLabel}</b></span>
+                  <span>{doubleGripTip}</span>
+                  <span>{duelistTip}</span>
+                  <span>: {el.totalHits}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     );
   }
