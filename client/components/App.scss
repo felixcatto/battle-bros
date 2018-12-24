@@ -99,6 +99,8 @@ body {
     cursor: help;
   }
   &__saved-result {
+    display: flex;
+    align-items: center;
     margin-bottom: 10px;
     &:last-child {
       margin-bottom: 0;

@@ -220,6 +220,54 @@ class App extends React.Component {
     this.setState({ savedResults: [] });
   }
 
+  onCalculateAll = async () => {
+    const { setTouched, values, validateForm } = this.props;
+    const allTouched = Object.keys(values)
+      .reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    setTouched(allTouched);
+
+    const errors = await validateForm();
+    if (!isEmpty(errors)) return;
+
+    const savedResults = weaponsList
+      .filter(el => el.includeToAllCalc)
+      .map(el => ({
+        ...values,
+        ...el,
+        weaponLabel: el.name,
+        countOfTests: 5000,
+      }))
+      .reduce((acc, el) => {
+        acc.push(el);
+        if (el.isOneHanded) {
+          acc.push({
+            ...el,
+            dmgPerHit: Math.round(el.dmgPerHit * 1.25),
+            hasDoubleGrip: true,
+          });
+          acc.push({
+            ...el,
+            dmgPerHit: Math.round(el.dmgPerHit * 1.25),
+            armorPiercingPercent: round(el.armorPiercingPercent + 0.25, 2),
+            hasDoubleGrip: true,
+            hasDuelist: true,
+          });
+        }
+        return acc;
+      }, [])
+      .map(options => ({
+        weaponLabel: options.weaponLabel,
+        totalHits: round(getAverageStats(options).totalHits, 2),
+        hasDoubleGrip: options.hasDoubleGrip,
+        hasDuelist: options.hasDuelist,
+        hasTwoAttacks: options.hasTwoAttacks,
+      }));
+
+    savedResults.sort((a, b) => b.totalHits - a.totalHits);
+
+    this.setState({ savedResults });
+  }
+
   onSubmit = async (e) => {
     e.preventDefault();
     const { setTouched, values, validateForm } = this.props;
@@ -501,11 +549,17 @@ class App extends React.Component {
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
               Calculate
             </button>
-            {values.isSaveMode &&
-              <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
-                Clear Results
-              </button>
-            }
+            <button
+              type="button"
+              className="btn btn-outline-primary ml-10"
+              disabled={isSubmitting}
+              onClick={this.onCalculateAll}
+            >
+              Calculate All Weapons
+            </button>
+            <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
+              Clear Results
+            </button>
           </div>
 
         </form>
@@ -539,18 +593,20 @@ class App extends React.Component {
             }
           </div>
           <div className="col-6">
-            {savedResults.map((el, i) => {
-              const doubleGripTip = el.hasDoubleGrip ? ' (DG)' : '';
-              const duelistTip = el.hasDuelist ? ' (D)' : '';
-              return (
-                <div className="app__saved-result" key={i}>
-                  <span><b>{el.weaponLabel}</b></span>
-                  <span>{doubleGripTip}</span>
-                  <span>{duelistTip}</span>
-                  <span>: {el.totalHits}</span>
-                </div>
-              );
-            })}
+            {savedResults.map((el, i) => (
+              <div className="app__saved-result" key={i}>
+                <span><b>{el.weaponLabel}</b>: {el.totalHits}</span>
+                {el.hasTwoAttacks &&
+                  <span className="badge badge-warning ml-10">Two Attacks</span>
+                }
+                {el.hasDoubleGrip &&
+                  <span className="badge badge-primary ml-10">Double Grip</span>
+                }
+                {el.hasDuelist &&
+                  <span className="badge badge-primary ml-10">Duelist</span>
+                }
+              </div>
+            ))}
           </div>
         </div>
 
