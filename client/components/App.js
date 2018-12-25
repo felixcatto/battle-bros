@@ -549,17 +549,21 @@ class App extends React.Component {
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
               Calculate
             </button>
-            <button
-              type="button"
-              className="btn btn-outline-primary ml-10"
-              disabled={isSubmitting}
-              onClick={this.onCalculateAll}
-            >
-              Calculate All Weapons
-            </button>
-            <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
-              Clear Results
-            </button>
+            {false &&
+              <button
+                type="button"
+                className="btn btn-outline-primary ml-10"
+                disabled={isSubmitting}
+                onClick={this.onCalculateAll}
+              >
+                Calculate All Weapons
+              </button>
+            }
+            {!isEmpty(savedResults) &&
+              <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
+                Clear Results
+              </button>
+            }
           </div>
 
         </form>
