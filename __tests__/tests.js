@@ -238,7 +238,7 @@ test('(Battle Forged) no armor overkill', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(306);
+  expect(ehp).toBe(304);
 });
 
 
@@ -429,4 +429,35 @@ test('(Batter)', () => {
 
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(264);
+});
+
+
+test('Bad rounding', () => {
+  const getTestRandomFunc = () => {
+    let i = 0;
+    const BODY = 0;
+    const HEAD = 1;
+    const parts = [BODY, BODY, HEAD, BODY, BODY, HEAD, BODY, BODY, BODY];
+    return () => {
+      const result = parts[i];
+      i += 1;
+      return result;
+    };
+  };
+
+  const options = {
+    startHp: 65,
+    startArmor: 320,
+    startHelm: 300,
+    dmgPerHit: 60,
+    armorPiercingPercent: 0.45,
+    vsArmorPercent: 0.85,
+    chanceToHitHead: 0.25,
+    hasBattleForged: true,
+    getRandomNum: getTestRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(420);
 });
