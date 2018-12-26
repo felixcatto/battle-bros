@@ -586,10 +586,13 @@ class App extends React.Component {
                 {logs.map((el, i) => (
                   <div key={i}>
                     <div>hit to: {el.struckPartName}</div>
+                    <div>armor damage: {el.armorDmg}</div>
+                    <div>ignore armor: {el.APRDmg}</div>
+                    <div>armor overkill: {Math.max(el.armorOverkillWithHead, 0)}</div>
                     <div>hp: {el.hp}</div>
                     <div>armor: {el.armor}</div>
                     <div>helm: {el.helm}</div>
-                    <div>usedDmg: {el.usedDmg}</div>
+                    <div>used damage: {el.usedDmg}</div>
                     <div>*********</div>
                   </div>
                 ))}
