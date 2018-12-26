@@ -129,7 +129,7 @@ test('simple ehp test (noPerk)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(293);
+  expect(ehp).toBe(301);
 });
 
 
@@ -147,7 +147,7 @@ test('head test (noPerk)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(221);
+  expect(ehp).toBe(230);
 });
 
 
@@ -201,7 +201,7 @@ test('dmg vs armor - cruel falchion (noPerk)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(228);
+  expect(ehp).toBe(230);
 });
 
 
@@ -238,7 +238,7 @@ test('(Battle Forged) no armor overkill', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(304);
+  expect(ehp).toBe(311);
 });
 
 
@@ -257,7 +257,7 @@ test('(Battle Forged) cruel falchion', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(224);
+  expect(ehp).toBe(227);
 });
 
 
@@ -277,7 +277,7 @@ test('(Nimble) full powered', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(415);
+  expect(ehp).toBe(423);
 });
 
 
@@ -295,7 +295,7 @@ test('(noPerk) chanceToHitHead 0.5', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(146);
+  expect(ehp).toBe(147);
 });
 
 
@@ -314,7 +314,7 @@ test('(Nine Live)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(141);
+  expect(ehp).toBe(144);
 });
 
 
@@ -390,7 +390,7 @@ test('(Chop)', () => {
   };
 
   const ehp = getAverageEHP(options);
-  expect(ehp).toBe(303);
+  expect(ehp).toBe(340);
 });
 
 
@@ -429,35 +429,4 @@ test('(Batter)', () => {
 
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(264);
-});
-
-
-test('Bad rounding', () => {
-  const getTestRandomFunc = () => {
-    let i = 0;
-    const BODY = 0;
-    const HEAD = 1;
-    const parts = [BODY, BODY, HEAD, BODY, BODY, HEAD, BODY, BODY, BODY];
-    return () => {
-      const result = parts[i];
-      i += 1;
-      return result;
-    };
-  };
-
-  const options = {
-    startHp: 65,
-    startArmor: 320,
-    startHelm: 300,
-    dmgPerHit: 60,
-    armorPiercingPercent: 0.45,
-    vsArmorPercent: 0.85,
-    chanceToHitHead: 0.25,
-    hasBattleForged: true,
-    getRandomNum: getTestRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(420);
 });
