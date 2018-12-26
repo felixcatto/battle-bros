@@ -18,7 +18,7 @@ import Checkbox from './Checkbox';
 const validationSchema = Yup.object().shape({
   startHp: Yup.number()
     .min(1)
-    .max(500)
+    .max(1000)
     .required('Required'),
   startArmor: Yup.number()
     .min(0)
