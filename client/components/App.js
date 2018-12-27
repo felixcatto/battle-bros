@@ -5,7 +5,7 @@ import {
 } from 'formik';
 import * as Yup from 'yup';
 import { Popover, OverlayTrigger } from 'react-bootstrap';
-import { isEmpty, isNumber } from 'lodash';
+import { isEmpty, isNumber, omit } from 'lodash';
 import Select from 'react-select';
 import PropTypes from 'prop-types';
 import { round } from 'Lib/utils';
@@ -229,38 +229,32 @@ class App extends React.Component {
     const errors = await validateForm();
     if (!isEmpty(errors)) return;
 
+    const filteredValues = omit(values, ['hasDoubleGrip', 'hasDuelist']);
     const savedResults = weaponsList
-      .filter(el => el.includeToAllCalc)
+      .filter(el => el.isIncludedToAllCalc)
       .map(el => ({
-        ...values,
+        ...filteredValues,
         ...el,
         weaponLabel: el.name,
         countOfTests: 5000,
       }))
-      .reduce((acc, el) => {
-        acc.push(el);
-        if (el.isOneHanded) {
-          acc.push({
-            ...el,
-            dmgPerHit: Math.round(el.dmgPerHit * 1.25),
-            hasDoubleGrip: true,
-          });
-          acc.push({
+      .map((el) => {
+        if (el.useDoubleGripDuelist) {
+          return {
             ...el,
             dmgPerHit: Math.round(el.dmgPerHit * 1.25),
             armorPiercingPercent: round(el.armorPiercingPercent + 0.25, 2),
             hasDoubleGrip: true,
             hasDuelist: true,
-          });
+          };
         }
-        return acc;
-      }, [])
+        return el;
+      })
       .map(options => ({
         weaponLabel: options.weaponLabel,
         totalHits: round(getAverageStats(options).totalHits, 2),
         hasDoubleGrip: options.hasDoubleGrip,
         hasDuelist: options.hasDuelist,
-        hasTwoAttacks: options.hasTwoAttacks,
       }));
 
     savedResults.sort((a, b) => b.totalHits - a.totalHits);
@@ -549,16 +543,14 @@ class App extends React.Component {
             <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
               Calculate
             </button>
-            {false &&
-              <button
-                type="button"
-                className="btn btn-outline-primary ml-10"
-                disabled={isSubmitting}
-                onClick={this.onCalculateAll}
-              >
-                Calculate All Weapons
-              </button>
-            }
+            <button
+              type="button"
+              className="btn btn-outline-primary ml-10"
+              disabled={isSubmitting}
+              onClick={this.onCalculateAll}
+            >
+              Calculate Some Weapons
+            </button>
             {!isEmpty(savedResults) &&
               <button type="button" className="btn btn-outline-primary ml-10" onClick={this.onClearSavedResults}>
                 Clear Results
@@ -603,9 +595,6 @@ class App extends React.Component {
             {savedResults.map((el, i) => (
               <div className="app__saved-result" key={i}>
                 <span><b>{el.weaponLabel}</b>: {el.totalHits}</span>
-                {el.hasTwoAttacks &&
-                  <span className="badge badge-warning ml-10">Two Attacks</span>
-                }
                 {el.hasDoubleGrip &&
                   <span className="badge badge-primary ml-10">Double Grip</span>
                 }
