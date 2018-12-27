@@ -32,10 +32,22 @@ const validationSchema = Yup.object().shape({
     .min(1)
     .max(50000)
     .required('Required'),
-  dmgPerHit: Yup.number()
+  minDmg: Yup.number()
     .min(1)
     .max(1000)
-    .required('Required'),
+    .required('Required')
+    .test('minDmg', 'minDmg should be lower or equal, than maxDmg', function (minDmg) {
+      const { maxDmg } = this.parent;
+      return minDmg <= maxDmg;
+    }),
+  maxDmg: Yup.number()
+    .min(1)
+    .max(1000)
+    .required('Required')
+    .test('maxDmg', 'maxDmg should be greater or equal, than minDmg', function (maxDmg) {
+      const { minDmg } = this.parent;
+      return minDmg <= maxDmg;
+    }),
   armorPiercingPercent: Yup.number()
     .min(0)
     .max(2)
@@ -73,10 +85,11 @@ const formikEnhancer = withFormik({
   validationSchema,
   mapPropsToValues: () => ({
     startHp: 65,
-    startArmor: '',
-    startHelm: '',
+    startArmor: 0,
+    startHelm: 0,
     countOfTests: 20000,
-    dmgPerHit: 60,
+    minDmg: 60,
+    maxDmg: 60,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
@@ -177,9 +190,11 @@ class App extends React.Component {
   onDoubleGripChange = (e) => {
     const { handleChange, setFieldValue, values } = this.props;
     if (values.hasDoubleGrip) {
-      setFieldValue('dmgPerHit', Math.round(values.dmgPerHit / 1.25));
+      setFieldValue('minDmg', Math.round(values.minDmg / 1.25));
+      setFieldValue('maxDmg', Math.round(values.maxDmg / 1.25));
     } else {
-      setFieldValue('dmgPerHit', Math.round(values.dmgPerHit * 1.25));
+      setFieldValue('minDmg', Math.round(values.minDmg * 1.25));
+      setFieldValue('maxDmg', Math.round(values.maxDmg * 1.25));
     }
 
     handleChange(e);
@@ -244,7 +259,8 @@ class App extends React.Component {
         if (el.useDoubleGripDuelist) {
           return {
             ...el,
-            dmgPerHit: Math.round(el.dmgPerHit * 1.25),
+            minDmg: Math.round(el.minDmg * 1.25),
+            maxDmg: Math.round(el.maxDmg * 1.25),
             armorPiercingPercent: round(el.armorPiercingPercent + 0.25, 2),
             hasDoubleGrip: true,
             hasDuelist: true,
@@ -427,17 +443,25 @@ class App extends React.Component {
                 isClearable
               />
             </div>
-          </div>
-
-          <div className="row mb-15">
             <div className="col-3">
               <Field
                 component={CommonField}
-                name="dmgPerHit"
-                label="Average Damage"
+                name="minDmg"
+                label="Min Damage"
                 type="number"
               />
             </div>
+            <div className="col-3">
+              <Field
+                component={CommonField}
+                name="maxDmg"
+                label="Max Damage"
+                type="number"
+              />
+            </div>
+          </div>
+
+          <div className="row mb-15">
             <div className="col-3">
               <Field component={CommonField}
                 name="armorPiercingPercent"
