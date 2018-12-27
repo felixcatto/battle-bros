@@ -430,3 +430,22 @@ test('(Batter)', () => {
   const ehp = getAverageEHP(options);
   expect(ehp).toBe(264);
 });
+
+
+test('(Fur Padding)', () => {
+  const options = {
+    startHp: 80,
+    startArmor: 180,
+    startHelm: 180,
+    dmgPerHit: 80,
+    armorPiercingPercent: 0.45,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasFurPadding: true,
+    getRandomNum: getRandomFunc(),
+    countOfTests: 1,
+  };
+
+  const ehp = getAverageEHP(options);
+  expect(ehp).toBe(218);
+});

@@ -66,6 +66,7 @@ const validationSchema = Yup.object().shape({
   hasCrossbowMastery: Yup.boolean(),
   hasChop: Yup.boolean(),
   hasBatter: Yup.boolean(),
+  hasFurPadding: Yup.boolean(),
 });
 
 const formikEnhancer = withFormik({
@@ -91,6 +92,7 @@ const formikEnhancer = withFormik({
     hasCrossbowMastery: false,
     hasChop: false,
     hasBatter: false,
+    hasFurPadding: false,
     isTestMode: false,
     isSaveMode: false,
   }),
@@ -324,7 +326,7 @@ class App extends React.Component {
         <form onSubmit={this.onSubmit}>
 
           <h4>Character</h4>
-          <div className="row mb-35">
+          <div className="row mb-10">
             <div className="col-3">
               <div>Character Preset</div>
               <Select
@@ -345,53 +347,7 @@ class App extends React.Component {
             </div>
           </div>
 
-          <h4>Weapon</h4>
-          <div className="row mb-20">
-            <div className="col-3">
-              <div>Weapon Preset</div>
-              <Select
-                value={selectedWeapon}
-                onChange={this.onWeaponSelect}
-                options={weaponOptions}
-                isClearable
-              />
-            </div>
-          </div>
-
-          <div className="row mb-35">
-            <div className="col-3">
-              <Field
-                component={CommonField}
-                name="dmgPerHit"
-                label="Average Damage"
-                type="number"
-              />
-            </div>
-            <div className="col-3">
-              <Field component={CommonField}
-                name="armorPiercingPercent"
-                label="Armor Piercing Percent"
-                type="number"
-              />
-            </div>
-            <div className="col-3">
-              <Field component={CommonField}
-                name="vsArmorPercent"
-                label="vs Armor Percent"
-                type="number"
-              />
-            </div>
-            <div className="col-3">
-              <Field component={CommonField}
-                name="chanceToHitHead"
-                label="Chance To Hit Head"
-                type="number"
-              />
-            </div>
-          </div>
-
-          <h4 className="mb-0">Perks</h4>
-          <div className="app__mix-row row align-items-center mb-15">
+          <div className="app__mix-row row align-items-center mb-10">
             <div className="col-3">
               <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
             </div>
@@ -444,6 +400,68 @@ class App extends React.Component {
                 )}
               />
             </div>
+            <div className="col-3">
+              <Field
+                component={Checkbox}
+                name="hasFurPadding"
+                label="Fur Padding"
+              />
+              <OverlayTrigger trigger="hover" placement="right" overlay={(
+                <Popover>
+                  Reduces damage ignoring armor by 33%
+                </Popover>
+              )}>
+                <i className="far fa-question-circle app__tooltip ml-5"></i>
+              </OverlayTrigger>
+            </div>
+          </div>
+
+          <h4>Weapon</h4>
+          <div className="row mb-15">
+            <div className="col-3">
+              <div>Weapon Preset</div>
+              <Select
+                value={selectedWeapon}
+                onChange={this.onWeaponSelect}
+                options={weaponOptions}
+                isClearable
+              />
+            </div>
+          </div>
+
+          <div className="row mb-15">
+            <div className="col-3">
+              <Field
+                component={CommonField}
+                name="dmgPerHit"
+                label="Average Damage"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="armorPiercingPercent"
+                label="Armor Piercing Percent"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="vsArmorPercent"
+                label="vs Armor Percent"
+                type="number"
+              />
+            </div>
+            <div className="col-3">
+              <Field component={CommonField}
+                name="chanceToHitHead"
+                label="Chance To Hit Head"
+                type="number"
+              />
+            </div>
+          </div>
+
+          <div className="row mb-15">
             <div className="col-3">
               <Field
                 name="hasDoubleGrip"
@@ -512,6 +530,7 @@ class App extends React.Component {
             </div>
           </div>
 
+          <h4>Other</h4>
           <div className="row align-items-center mb-30">
             <div className="col-3">
               <Field
