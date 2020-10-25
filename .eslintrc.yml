@@ -1,21 +1,50 @@
 env:
   node: true
-  jest: true
   browser: true
+  jest: true
 
 parser: babel-eslint
 
 extends:
   - 'airbnb-base'
   - 'plugin:react/recommended'
+  - 'plugin:react-hooks/recommended'
+
+ignorePatterns:
+  - '/dist'
 
 settings:
-  import/resolver: webpack
   react:
-    version: '16.6.0'
+    version: '16.13.1'
 
 rules:
-  no-console: 1
-  max-len: 1
-  import/prefer-default-export: 0
+  # Formatting done by Prettier
+  function-paren-newline: 0
+  no-confusing-arrow: 0
+  implicit-arrow-linebreak: 0
+  object-curly-newline: 0
   operator-linebreak: 0
+  # END
+  consistent-return: 0
+  import/prefer-default-export: 0
+  no-console: 1
+  arrow-parens:
+    - error
+    - as-needed
+  comma-dangle:
+    - error
+    - objects: only-multiline
+      arrays: only-multiline
+      functions: ignore
+  no-param-reassign:
+    - error
+    - props: false
+  no-return-assign:
+    - error
+    - except-parens
+  max-len:
+    - error
+    - ignoreComments: true
+      code: 100
+  react/prop-types: 0
+  react/display-name: 1

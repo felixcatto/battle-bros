@@ -17,10 +17,10 @@ lint-fix:
 	npx eslint --fix .
 
 test:
-	npx jest --watch
+	npx jest --runInBand --watch
 
-test-once:
-	npx jest
+test-one-file:
+	npx jest --runInBand --watch $(arg)
 
 deploy:
 	git push -f heroku master

@@ -1,5 +1,4 @@
-import { getAverageStats } from '../lib/math';
-
+import { getStats } from '../lib/math';
 
 const getRandomFunc = () => {
   let i = 0;
@@ -17,458 +16,302 @@ const getHeadRandomFunc = () => {
   };
 };
 
-const getAverageEHP = options => getAverageStats(options).totalEHP;
-
-
-test('simple ehp test (Steelbrow)', () => {
+test('Body kill', () => {
   const options = {
     startHp: 60,
-    startArmor: 220,
-    startHelm: 220,
-    minDmg: 60,
-    maxDmg: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
-    hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(302);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-48);
 });
 
-
-test('simple ehp test (Steelbrow)', () => {
+test('Head kill', () => {
   const options = {
-    startHp: 55,
-    startArmor: 220,
-    startHelm: 220,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSteelBrow: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(297);
-});
-
-
-test('low hp (Steelbrow)', () => {
-  const options = {
-    startHp: 2,
-    startArmor: 220,
-    startHelm: 220,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSteelBrow: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(60);
-});
-
-
-test('low hp (Steelbrow)', () => {
-  const options = {
-    startHp: 1,
-    startArmor: 220,
-    startHelm: 220,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSteelBrow: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(58);
-});
-
-
-test('vs armor 4 (Steelbrow)', () => {
-  const options = {
-    startHp: 50,
-    startArmor: 100,
-    startHelm: 100,
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
     minDmg: 50,
     maxDmg: 50,
-    armorPiercingPercent: 0,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(4);
+  expect(stats.endHp).toBe(-3);
+});
+
+test('Lots of armor', () => {
+  const options = {
+    startHp: 50,
+    startArmor: 300,
+    startHelm: 200,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.1,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(5);
+  expect(stats.endHp).toBe(-60);
+});
+
+test('hasNineLive', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasNineLive: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-92);
+});
+
+test('hasFurPadding', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasFurPadding: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-38);
+});
+
+test('chanceToHitHead 0.5', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.5,
+    getRandomNum: getHeadRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-10);
+});
+
+test('hasChop', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.5,
+    hasChop: true,
+    getRandomNum: getHeadRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-24);
+});
+
+test('hasSteelBrow', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 50,
+    maxDmg: 50,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSteelBrow: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(5);
+  expect(stats.endHp).toBe(-49);
+});
+
+test('vsArmorPercent 4', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 50,
+    maxDmg: 50,
+    armorPiercingPercent: 0.3,
     vsArmorPercent: 4,
     chanceToHitHead: 0.25,
-    hasSteelBrow: true,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(75);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-5);
 });
 
-
-test('simple ehp test (noPerk)', () => {
+test('vsArmorPercent 0.5', () => {
   const options = {
     startHp: 60,
-    startArmor: 220,
-    startHelm: 220,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(301);
-});
-
-
-test('head test (noPerk)', () => {
-  const options = {
-    startHp: 60,
-    startArmor: 160,
-    startHelm: 160,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(230);
-});
-
-
-test('head overkill (noPerk)', () => {
-  const options = {
-    startHp: 80,
-    startArmor: 160,
-    startHelm: 20,
-    minDmg: 60,
-    maxDmg: 60,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(212);
-});
-
-
-test('vsArmorPercent 2 (noPerk)', () => {
-  const options = {
-    startHp: 1,
     startArmor: 100,
     startHelm: 100,
     minDmg: 50,
     maxDmg: 50,
-    armorPiercingPercent: 0,
-    vsArmorPercent: 2,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 0.5,
     chanceToHitHead: 0.25,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(51);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(5);
+  expect(stats.endHp).toBe(-8);
 });
 
-
-test('dmg vs armor - cruel falchion (noPerk)', () => {
+test('hasBattleForged', () => {
   const options = {
-    startHp: 50,
-    startArmor: 110,
-    startHelm: 110,
-    minDmg: 35,
-    maxDmg: 35,
-    armorPiercingPercent: 0.2,
-    vsArmorPercent: 0.7,
-    chanceToHitHead: 0.25,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(230);
-});
-
-
-test('dmg vs armor - 2h hammer (noPerk)', () => {
-  const options = {
-    startHp: 60,
-    startArmor: 300,
-    startHelm: 300,
-    minDmg: 95,
-    maxDmg: 95,
-    armorPiercingPercent: 0.5,
-    vsArmorPercent: 2,
-    chanceToHitHead: 0.25,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(145);
-});
-
-
-test('(Battle Forged) no armor overkill', () => {
-  const options = {
-    startHp: 60,
-    startArmor: 200,
-    startHelm: 200,
-    minDmg: 60,
-    maxDmg: 60,
+    startHp: 100,
+    startArmor: 250,
+    startHelm: 100,
+    minDmg: 100,
+    maxDmg: 100,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
     hasBattleForged: true,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(311);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(4);
+  expect(stats.endHp).toBe(-11);
 });
 
-
-test('(Battle Forged) cruel falchion', () => {
+test('hasNimble', () => {
   const options = {
-    startHp: 50,
-    startArmor: 100,
-    startHelm: 100,
-    minDmg: 35,
-    maxDmg: 35,
-    armorPiercingPercent: 0.2,
-    vsArmorPercent: 0.7,
-    chanceToHitHead: 0.25,
-    hasBattleForged: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(227);
-});
-
-
-test('(Nimble) full powered', () => {
-  const options = {
-    startHp: 115,
-    startArmor: 95,
+    startHp: 100,
+    startArmor: 120,
     startHelm: 120,
-    minDmg: 80,
-    maxDmg: 80,
+    minDmg: 100,
+    maxDmg: 100,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
     hasNimble: true,
     totalFtg: 15,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(423);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(5);
+  expect(stats.endHp).toBe(-37);
 });
 
+test('hasBatter', () => {
+  const options = {
+    startHp: 50,
+    startArmor: 160,
+    startHelm: 120,
+    minDmg: 50,
+    maxDmg: 50,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasBatter: true,
+    getRandomNum: getRandomFunc(),
+  };
 
-test('(noPerk) chanceToHitHead 0.5', () => {
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(5);
+  expect(stats.endHp).toBe(-36);
+});
+
+test('hasSplitMan', () => {
   const options = {
     startHp: 70,
-    startArmor: 60,
-    startHelm: 60,
-    minDmg: 40,
-    maxDmg: 40,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.5,
-    getRandomNum: getHeadRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(147);
-});
-
-
-test('(Nine Live)', () => {
-  const options = {
-    startHp: 40,
-    startArmor: 60,
-    startHelm: 60,
-    minDmg: 40,
-    maxDmg: 40,
+    startArmor: 200,
+    startHelm: 200,
+    minDmg: 80,
+    maxDmg: 80,
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
+    hasSplitMan: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-6);
+});
+
+test('hasSplitMan chanceToHitHead 0.5', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 200,
+    startHelm: 200,
+    minDmg: 80,
+    maxDmg: 80,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.5,
+    hasSplitMan: true,
+    getRandomNum: getHeadRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-2);
+});
+
+test('hasSplitMan hasNineLive', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 80,
+    startHelm: 130,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSplitMan: true,
     hasNineLive: true,
     getRandomNum: getRandomFunc(),
-    countOfTests: 1,
   };
 
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(144);
-});
-
-
-test('(Split Man) body kill, with fisrt part', () => {
-  const options = {
-    startHp: 65,
-    startArmor: 200,
-    startHelm: 200,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSplitMan: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(201);
-});
-
-
-test('(Split Man) head kill, with fisrt part', () => {
-  const options = {
-    startHp: 180,
-    startArmor: 200,
-    startHelm: 150,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSplitMan: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(291);
-});
-
-
-test('(Split Man) head kill, with second part', () => {
-  const options = {
-    startHp: 200,
-    startArmor: 200,
-    startHelm: 150,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasSplitMan: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(302);
-});
-
-
-test('(Chop)', () => {
-  const options = {
-    startHp: 100,
-    startArmor: 200,
-    startHelm: 200,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.5,
-    hasChop: true,
-    getRandomNum: getHeadRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(340);
-});
-
-
-test('(Batter) no real use of it', () => {
-  const options = {
-    startHp: 100,
-    startArmor: 180,
-    startHelm: 180,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasBatter: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(238);
-});
-
-
-test('(Batter)', () => {
-  const options = {
-    startHp: 100,
-    startArmor: 180,
-    startHelm: 180,
-    minDmg: 40,
-    maxDmg: 40,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasBatter: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(264);
-});
-
-
-test('(Fur Padding)', () => {
-  const options = {
-    startHp: 80,
-    startArmor: 180,
-    startHelm: 180,
-    minDmg: 80,
-    maxDmg: 80,
-    armorPiercingPercent: 0.45,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasFurPadding: true,
-    getRandomNum: getRandomFunc(),
-    countOfTests: 1,
-  };
-
-  const ehp = getAverageEHP(options);
-  expect(ehp).toBe(218);
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-112);
 });
