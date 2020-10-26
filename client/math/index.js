@@ -1,3 +1,4 @@
+import { omit } from 'lodash';
 import { getRandomInRange } from './utils';
 import { commonCalc } from './strategyCommon';
 import { splitMan } from './strategySplitMan';
@@ -34,6 +35,7 @@ export const getStats = options => {
     hasChop,
     hasFurPadding,
     getRandomNum = Math.random,
+    shouldWriteLog = true,
   } = options;
 
   const getStatsAfterHit = configureStatsAfterHit(options);
@@ -65,14 +67,16 @@ export const getStats = options => {
 
     const afterHit = getStatsAfterHit(afterHitOptions);
 
-    stats.logs.push({
-      hp: afterHit.hp,
-      armor: afterHit.armor,
-      helm: afterHit.helm,
-      struckPartName: afterHitOptions.struckPartName,
-      armorDmg: afterHit.armorDmg,
-      dmgToHp: afterHit.dmgToHp,
-    });
+    if (shouldWriteLog) {
+      stats.logs.push({
+        hp: afterHit.hp,
+        armor: afterHit.armor,
+        helm: afterHit.helm,
+        struckPartName: afterHitOptions.struckPartName,
+        armorDmg: afterHit.armorDmg,
+        dmgToHp: afterHit.dmgToHp,
+      });
+    }
 
     stats.hitsToKill += 1;
     if (afterHit.hp <= 0) {
@@ -87,19 +91,30 @@ export const getStats = options => {
 };
 
 export const getAverageStats = options => {
-  const { countOfTests = 50000 } = options;
+  const countOfTests = options.countOfTests || 50000;
+  const newOptions = {
+    ...options,
+    countOfTests,
+    shouldWriteLog: false,
+  };
 
   return (
     [...Array(countOfTests).keys()]
-      .map(() => getEHPStats(options))
+      .map(() => getStats(newOptions))
       .reduce(
-        ({ totalHits = 0 }, stats) => ({
-          totalHits: totalHits + stats.totalHits,
+        (acc, stats) => ({
+          ...acc,
+          totalHits: acc.totalHits + stats.hitsToKill,
+          [stats.hitsToKill]: (acc[stats.hitsToKill] || 0) + 1,
         }),
-        {}
+        { totalHits: 0 }
       )
-    |> (x => ({
-      totalHits: x.totalHits / countOfTests,
+    |> (v => ({
+      avgHits: v.totalHits / countOfTests,
+      probability: Object.keys(omit(v, 'totalHits')).map(key => ({
+        hitsToKill: key,
+        chance: v[key] / countOfTests,
+      })),
     }))
   );
 };

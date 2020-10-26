@@ -6,10 +6,24 @@ const rawWeaponsList = [
     vsArmorPercent: 0.6,
   },
   {
+    name: 'Notched Blade',
+    dmg: '20-30',
+    armorPiercingPercent: 0.2,
+    vsArmorPercent: 0.6,
+  },
+  {
     name: 'Rondel Dagger',
     dmg: '20-40',
     armorPiercingPercent: 0.2,
     vsArmorPercent: 0.7,
+  },
+  {
+    name: 'Qatal Dagger',
+    dmg: '30-45',
+    armorPiercingPercent: 0.2,
+    vsArmorPercent: 0.7,
+    isIncludedToAllCalc: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Shortsword',
@@ -35,7 +49,7 @@ const rawWeaponsList = [
     armorPiercingPercent: 0.2,
     vsArmorPercent: 0.85,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Fencing Sword',
@@ -65,7 +79,7 @@ const rawWeaponsList = [
   },
   {
     name: 'Greatsword (overhead)',
-    dmg: '105-125',
+    dmg: '105-120',
     armorPiercingPercent: 0.25,
     vsArmorPercent: 1,
     chanceToHitHead: 0.3,
@@ -90,7 +104,7 @@ const rawWeaponsList = [
     armorPiercingPercent: 0.4,
     vsArmorPercent: 1.1,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Two-handed Mace',
@@ -118,6 +132,19 @@ const rawWeaponsList = [
     vsArmorPercent: 1,
   },
   {
+    name: 'Goedendag',
+    dmg: '45-75',
+    armorPiercingPercent: 0.25,
+    vsArmorPercent: 1,
+  },
+  {
+    name: 'Spetum',
+    dmg: '55-75',
+    armorPiercingPercent: 0.25,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.3,
+  },
+  {
     name: 'Handaxe',
     dmg: '30-45',
     armorPiercingPercent: 0.3,
@@ -131,7 +158,7 @@ const rawWeaponsList = [
     vsArmorPercent: 1.3,
     hasChop: true,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Head Splitter (Orc)',
@@ -141,10 +168,17 @@ const rawWeaponsList = [
     hasChop: true,
   },
   {
-    name: 'Woodcutter\'s Axe',
+    name: "Woodcutter's Axe",
     dmg: '35-70',
     armorPiercingPercent: 0.4,
     vsArmorPercent: 1.25,
+    hasSplitMan: true,
+  },
+  {
+    name: 'Heavy Rusty Axe (barb)',
+    dmg: '75-90',
+    armorPiercingPercent: 0.5,
+    vsArmorPercent: 1.5,
     hasSplitMan: true,
   },
   {
@@ -154,6 +188,13 @@ const rawWeaponsList = [
     vsArmorPercent: 1.5,
     hasSplitMan: true,
     isIncludedToAllCalc: true,
+  },
+  {
+    name: 'Bardiche',
+    dmg: '75-95',
+    armorPiercingPercent: 0.4,
+    vsArmorPercent: 1.3,
+    hasSplitMan: true,
   },
   {
     name: 'Man Splitter (Orc)',
@@ -170,11 +211,12 @@ const rawWeaponsList = [
     chanceToHitHead: 0.35,
   },
   {
-    name: 'Two-handed Wooden Flail',
-    dmg: '45-80',
-    armorPiercingPercent: 0.4,
-    vsArmorPercent: 0.8,
-    chanceToHitHead: 0.4,
+    name: 'Three-Headed Flail',
+    dmg: '30-75',
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.35,
+    hasThreeHeadedFlail: true,
   },
   {
     name: 'Two-handed Flail',
@@ -202,7 +244,7 @@ const rawWeaponsList = [
     armorPiercingPercent: 0.25,
     vsArmorPercent: 0.9,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Head Chopper (Orc)',
@@ -216,14 +258,26 @@ const rawWeaponsList = [
     armorPiercingPercent: 0.25,
     vsArmorPercent: 1.2,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Crypt Cleaver (Ancient Dead)',
+    dmg: '60-80',
+    armorPiercingPercent: 0.25,
+    vsArmorPercent: 1.2,
+    isIncludedToAllCalc: true,
+  },
+  {
+    name: 'Rusty Warblade (barb)',
+    dmg: '60-80',
+    armorPiercingPercent: 0.35,
+    vsArmorPercent: 1.1,
+  },
+  {
+    name: 'Two-Handed Scimitar',
     dmg: '65-85',
     armorPiercingPercent: 0.25,
-    vsArmorPercent: 1.15,
-    isIncludedToAllCalc: true,
+    vsArmorPercent: 1.1,
   },
   {
     name: 'Military Pick',
@@ -239,7 +293,7 @@ const rawWeaponsList = [
     vsArmorPercent: 2.25,
     hasBatter: true,
     isIncludedToAllCalc: true,
-    useDoubleGripDuelist: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Two-Handed Hammer (Smite)',
@@ -257,9 +311,9 @@ const rawWeaponsList = [
   },
   {
     name: 'Billhook',
-    dmg: '60-90',
+    dmg: '55-85',
     armorPiercingPercent: 0.3,
-    vsArmorPercent: 1.5,
+    vsArmorPercent: 1.4,
     chanceToHitHead: 0.3,
   },
   {
@@ -273,9 +327,16 @@ const rawWeaponsList = [
     name: 'Polehammer',
     dmg: '50-75',
     armorPiercingPercent: 0.5,
-    vsArmorPercent: 1.75,
+    vsArmorPercent: 1.85,
     chanceToHitHead: 0.3,
     hasBatter: true,
+  },
+  {
+    name: 'Polemace',
+    dmg: '60-75',
+    armorPiercingPercent: 0.4,
+    vsArmorPercent: 1.2,
+    chanceToHitHead: 0.3,
   },
   {
     name: 'Jagged Pike (Goblin)',
@@ -294,14 +355,26 @@ const rawWeaponsList = [
   {
     name: 'Warscythe (Ancient Dead)',
     dmg: '55-80',
-    armorPiercingPercent: 0.35,
-    vsArmorPercent: 1.04,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1.05,
+  },
+  {
+    name: 'Swordlance',
+    dmg: '60-80',
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 0.9,
   },
   {
     name: 'Bundle of Javelins',
     dmg: '30-45',
     armorPiercingPercent: 0.45,
     vsArmorPercent: 0.75,
+  },
+  {
+    name: 'Bundle of Heavy Javelins (barb)',
+    dmg: '35-50',
+    armorPiercingPercent: 0.45,
+    vsArmorPercent: 0.8,
   },
   {
     name: 'Bundle of Throwing Axes',
@@ -311,22 +384,41 @@ const rawWeaponsList = [
     chanceToHitHead: 0.3,
   },
   {
+    name: 'Bundle of Heavy Axes (barb)',
+    dmg: '30-50',
+    armorPiercingPercent: 0.25,
+    vsArmorPercent: 1.15,
+    chanceToHitHead: 0.3,
+  },
+  {
+    name: 'Nomad Sling',
+    dmg: '35-50',
+    armorPiercingPercent: 0.35,
+    vsArmorPercent: 0.6,
+  },
+  {
     name: 'Hunting Bow',
     dmg: '40-60',
     armorPiercingPercent: 0.35,
-    vsArmorPercent: 0.65,
+    vsArmorPercent: 0.55,
+  },
+  {
+    name: 'Composite Bow',
+    dmg: '40-55',
+    armorPiercingPercent: 0.35,
+    vsArmorPercent: 0.7,
   },
   {
     name: 'War Bow',
     dmg: '50-70',
     armorPiercingPercent: 0.35,
-    vsArmorPercent: 0.65,
+    vsArmorPercent: 0.6,
   },
   {
     name: 'Reinforced Boondock Bow (Goblin)',
-    dmg: '25-40',
+    dmg: '30-50',
     armorPiercingPercent: 0.35,
-    vsArmorPercent: 0.65,
+    vsArmorPercent: 0.6,
   },
   {
     name: 'Crossbow',
@@ -342,35 +434,97 @@ const rawWeaponsList = [
     vsArmorPercent: 0.75,
     hasCrossbowMastery: true,
   },
+  {
+    name: 'Handgonne',
+    dmg: '35-75',
+    armorPiercingPercent: 0.25,
+    vsArmorPercent: 1,
+  },
+  {
+    name: 'Direwolf (bite)',
+    dmg: '30-50',
+    armorPiercingPercent: 0.2,
+    vsArmorPercent: 0.7,
+  },
+  {
+    name: 'Frenzied Direwolf (bite)',
+    dmg: '30-50',
+    armorPiercingPercent: 0.2,
+    vsArmorPercent: 0.7,
+    dmgMult: 1.25,
+  },
+  {
+    name: 'Hyena (bite)',
+    dmg: '20-35',
+    armorPiercingPercent: 0.35,
+    vsArmorPercent: 1,
+  },
+  {
+    name: 'Frenzied Hyena (bite)',
+    dmg: '20-35',
+    armorPiercingPercent: 0.35,
+    vsArmorPercent: 1,
+    dmgMult: 1.25,
+  },
+  {
+    name: 'Serpent (bite)',
+    dmg: '50-70',
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 0.75,
+  },
+  {
+    name: 'Unhold (Sweep)',
+    dmg: '40-80',
+    armorPiercingPercent: 0.4,
+    vsArmorPercent: 0.8,
+    dmgMult: 1.1,
+  },
+  {
+    name: 'Schrat (Uproot)',
+    dmg: '70-100',
+    armorPiercingPercent: 0.5,
+    vsArmorPercent: 0.85,
+  },
+  {
+    name: 'Lindwurm (Gorge)',
+    dmg: '80-140',
+    armorPiercingPercent: 0.4,
+    vsArmorPercent: 1.5,
+  },
+  {
+    name: 'Lindwurm (Tail Slam)',
+    dmg: '60-120',
+    armorPiercingPercent: 0.5,
+    vsArmorPercent: 1.5,
+  },
 ];
 
 const weaponsList = rawWeaponsList.map(el => ({
   ...el,
   minDmg: Number(el.dmg.split('-')[0]),
   maxDmg: Number(el.dmg.split('-')[1]),
-  chanceToHitHead: el.chanceToHitHead
-    ? el.chanceToHitHead
-    : 0.25,
+  chanceToHitHead: el.chanceToHitHead ? el.chanceToHitHead : 0.25,
+  dmgMult: el.dmgMult ? el.dmgMult : 1,
   hasSplitMan: Boolean(el.hasSplitMan),
   hasCrossbowMastery: Boolean(el.hasCrossbowMastery),
   hasChop: Boolean(el.hasChop),
   hasBatter: Boolean(el.hasBatter),
   isIncludedToAllCalc: Boolean(el.isIncludedToAllCalc),
-  useDoubleGripDuelist: Boolean(el.useDoubleGripDuelist),
+  useDoubleGrip: Boolean(el.useDoubleGrip),
 }));
 
 const rawCharacterList = [
   {
     characterName: 'Heavy Bro',
-    startHp: 65,
+    startHp: 70,
     startArmor: 320,
     startHelm: 300,
     hasBattleForged: true,
   },
   {
     characterName: 'Light Bro',
-    startHp: 110,
-    startArmor: 95,
+    startHp: 100,
+    startArmor: 110,
     startHelm: 120,
     hasNimble: true,
     hasColossus: true,
@@ -431,7 +585,4 @@ const characterList = rawCharacterList.map(el => ({
   totalFtg: el.totalFtg ? el.totalFtg : 0,
 }));
 
-export {
-  weaponsList,
-  characterList,
-};
+export { weaponsList, characterList };

@@ -1,121 +1,123 @@
 const gulp = require('gulp');
-const babel = require('gulp-babel');
 const del = require('del');
-const { spawn } = require('child_process');
-const WebSocket = require('ws');
-const convert = require('koa-connect');
-const proxy = require('http-proxy-middleware');
-const serve = require('webpack-serve');
 const webpack = require('webpack');
+const babel = require('gulp-babel');
+const EventEmitter = require('events');
+const { spawn } = require('child_process');
+const waitOn = require('wait-on');
+const readline = require('readline');
+const { makeServer, listen } = require('blunt-livereload');
 const webpackConfig = require('./webpack.config.js');
+const babelConfig = require('./babelconfig.js');
 
+const { series, parallel } = gulp;
 
-const serverJsPath = [
-  '*/**/*.js',
-  '!client/**',
-  '!node_modules/**',
-  '!dist/**',
-  '!__tests__/**',
-  '!public/**',
-];
-
-const bundler = webpack(webpackConfig);
-
-let reloadDevServer = done => done();
-
-
-const startDevServer = (done) => {
-  const config = {
-    config: {
-      ...webpackConfig,
-      serve: {
-        port: 3000,
-        devMiddleware: {
-          logLevel: 'silent',
-        },
-        hotClient: {
-          host: 'localhost',
-          port: 8090,
-          logLevel: 'error',
-        },
-        add: async (app, middleware) => {
-          await middleware.webpack();
-          middleware.content();
-          app.use(convert(proxy('/', { target: 'http://localhost:4000' })));
-        },
-        on: {
-          listening() {
-            const socket = new WebSocket('ws://localhost:8090');
-            reloadDevServer = (doneCb) => {
-              socket.send(JSON.stringify({
-                type: 'broadcast',
-                data: {
-                  type: 'window-reload',
-                  data: {},
-                },
-              }));
-              doneCb();
-            };
-          },
-          'build-finished': () => reloadDevServer(() => {}),
-        },
-      },
-    },
-  };
-
-  serve({}, config).then(() => done());
+const paths = {
+  public: {
+    src: 'public/**/*',
+    dest: 'dist/public',
+  },
+  serverJs: {
+    src: ['*/**/*.js', '!node_modules/**', '!dist/**', '!client/**', '!__tests__/**'],
+    dest: 'dist',
+  },
+  client: {
+    components: 'client/**/*.js',
+    css: 'client/css/*',
+    dest: 'dist/client',
+  },
 };
 
+let server;
+let isWaitonListening = false;
+const startServer = async () => {
+  server = spawn('node', ['dist/bin/server.js'], { stdio: 'inherit' });
 
-let node;
-const startServer = (done) => {
-  if (node) node.kill();
-  node = spawn('node', ['dist/bin/server.js'], { stdio: 'inherit' });
-  setTimeout(done, 200);
-};
-process.on('exit', () => node && node.kill());
-
-
-const copyViews = () => gulp.src('main/index.html').pipe(gulp.dest('dist/main'));
-
-
-const copyMisc = gulp.series(
-  () => gulp.src('public/img/*').pipe(gulp.dest('dist/public/img')),
-);
-
-
-const bundleClientJs = done => bundler.run(done);
-
-
-const transpileServerJs = () => gulp.src(serverJsPath)
-  .pipe(babel())
-  .pipe(gulp.dest('dist'));
-
-
-const clean = () => del(['dist']);
-
-
-const watch = () => {
-  gulp.watch('main/index.html', gulp.series(copyViews, startServer, reloadDevServer));
+  if (!isWaitonListening) {
+    isWaitonListening = true;
+    await waitOn({
+      resources: ['http-get://localhost:4000'],
+      delay: 500,
+      interval: 1000,
+      validateStatus: status => status !== 503,
+    });
+    isWaitonListening = false;
+  }
 };
 
+const restartServer = async () => {
+  server.kill();
+  await startServer();
+};
+process.on('exit', () => server && server.kill());
 
-const dev = gulp.series(
+const webpackEmitter = new EventEmitter();
+const compiler = webpack(webpackConfig);
+const startWebpack = done => {
+  compiler.hooks.done.tap('done', () => webpackEmitter.emit('webpackDone'));
+  compiler.watch({}, done);
+};
+const bundleClient = done => compiler.run(done);
+const waitBundleClient = async () =>
+  new Promise(resolve => webpackEmitter.once('webpackDone', resolve));
+
+const devServer = makeServer();
+const startDevServer = async () => listen(devServer);
+const reloadBrowser = async () => devServer.reloadBrowser();
+
+const clean = async () => del(['dist']);
+
+const copyPublic = () => gulp.src(paths.public.src).pipe(gulp.dest(paths.public.dest));
+const copyPublicDev = () =>
+  gulp
+    .src(paths.public.src, { since: gulp.lastRun(copyPublicDev) })
+    .pipe(gulp.symlink(paths.public.dest, { overwrite: false }));
+
+const transpileServerJs = () =>
+  gulp
+    .src(paths.serverJs.src, { since: gulp.lastRun(transpileServerJs) })
+    .pipe(babel(babelConfig.server))
+    .pipe(gulp.dest(paths.serverJs.dest));
+
+const trackChangesInDist = () => {
+  const watcher = gulp.watch('dist/**/*');
+  watcher
+    .on('add', pathname => console.log(`File ${pathname} was added`))
+    .on('change', pathname => console.log(`File ${pathname} was changed`))
+    .on('unlink', pathname => console.log(`File ${pathname} was removed`));
+};
+
+const watchManualRestart = async () => {
+  const terminal = readline.createInterface({ input: process.stdin });
+  terminal.on('line', input => {
+    if (input === 'rs') {
+      series(transpileServerJs, restartServer)();
+    }
+  });
+};
+
+const watch = async () => {
+  gulp.watch(paths.public.src, series(copyPublicDev, restartServer, reloadBrowser));
+  gulp.watch(paths.serverJs.src, series(transpileServerJs, restartServer));
+  gulp.watch(paths.client.components).on('change', series(waitBundleClient, reloadBrowser));
+  gulp.watch(paths.client.css).on('change', series(waitBundleClient, reloadBrowser));
+  trackChangesInDist();
+};
+
+const dev = series(
   clean,
-  copyMisc,
-  copyViews,
+  watchManualRestart,
+  copyPublicDev,
   transpileServerJs,
-  startServer,
   startDevServer,
-  watch,
+  startWebpack,
+  startServer,
+  watch
 );
 
-const prod = gulp.series(
-  clean,
-  copyMisc,
-  copyViews,
-  bundleClientJs,
-  transpileServerJs,
-);
+const build = series(clean, parallel(copyPublic, transpileServerJs), bundleClient);
 
-module.exports = { dev, prod };
+module.exports = {
+  dev,
+  build,
+};

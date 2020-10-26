@@ -8,7 +8,7 @@ build:
 	NODE_ENV=production npx gulp prod
 
 webpack-bundle:
-	NODE_ENV=production npx webpack-cli
+	NODE_ENV=production npx webpack
 
 lint:
 	npx eslint .

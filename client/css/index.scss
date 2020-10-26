@@ -1,0 +1,93 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
+@import './fontawesome.min.css';
+@import './solid.min.css';
+@import './scssHelpers.scss';
+
+@font-face {
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: 900;
+  src: url('/font/fa-solid-900.woff') format('woff');
+}
+
+html {
+  font-size: 16px;
+}
+
+@keyframes smooth-appearance {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.a-appearance {
+  animation: smooth-appearance;
+  animation-duration: 0.3s;
+}
+
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.error {
+  color: #c9302c;
+}
+
+.popover {
+  padding: 5px 10px;
+}
+
+.text-light {
+  font-size: 0.75rem;
+  color: #6e7582 !important;
+}
+
+.app {
+  font-family: 'Comic Sans MS', 'ubuntu';
+  /*background-image: url('/img/celebration.png');*/
+  /*background-image: url('/img/giena.jpeg');*/
+  background-image: url('/img/bg4.jpg');
+  background-position: 0 25%;
+  background-size: cover;
+  background-attachment: fixed;
+  color: #34485c;
+
+  &__container {
+    min-height: 100vh;
+    background: #fff;
+    box-shadow: inset 12px 0 25px -15px rgba(0, 0, 0, 0.9),
+      inset -12px 0 25px -15px rgba(0, 0, 0, 0.9);
+  }
+
+  &__error {
+    color: #c9302c;
+  }
+
+  &__mix-row {
+    min-height: 62px;
+  }
+
+  &__perk-value {
+    font-size: 13px;
+  }
+  &__tooltip {
+    padding: 5px;
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: top;
+    color: #007bff;
+    cursor: help;
+  }
+  &__saved-result {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
