@@ -1,14 +1,15 @@
 import React from 'react';
-import { Field, ErrorMessage, withFormik, Form } from 'formik';
+import { Field, ErrorMessage, withFormik } from 'formik';
 import { object, number, boolean } from 'yup';
 import { Popover, OverlayTrigger } from 'react-bootstrap';
-import { isEmpty, isNumber, omit } from 'lodash';
+import { isEmpty, isNumber, omit, uniqueId, maxBy } from 'lodash';
 import Select from 'react-select';
 import { round, useImmerState } from '../lib/utils';
-import { weaponsList, characterList } from '../lib/presets';
+import { weaponsList, characterList, dmgMultiplierList } from '../lib/presets';
 import { getAverageStats, getStats } from '../math';
 import { getNimbleDmgReduction, getBFDmgReduction } from '../math/utils';
 import Checkbox from './Checkbox';
+import '../css/index.scss';
 
 const CommonField = ({ field, ...props }) => (
   <label className="d-block mb-0">
@@ -20,6 +21,23 @@ const CommonField = ({ field, ...props }) => (
 
 const weaponOptions = weaponsList.map(el => ({ value: el, label: el.name }));
 const characterOptions = characterList.map(el => ({ value: el, label: el.characterName }));
+const badgeList = [
+  { formOption: 'hasDoubleGrip', label: 'Double Grip' },
+  { formOption: 'hasDuelist', label: 'Duelist' },
+  { formOption: 'hasPuncture', label: 'Puncture' },
+  { formOption: 'hasSplitMan', label: 'Split Man' },
+  { formOption: 'hasColossus', label: 'Colossus' },
+  { formOption: 'hasNineLive', label: 'Nine Live' },
+  { formOption: 'hasSteelBrow', label: 'Steel Brow' },
+  { formOption: 'hasBattleForged', label: 'BForged' },
+  { formOption: 'hasNimble', label: 'Nimble' },
+  { formOption: 'hasBoneArmor', label: 'Bone Plating' },
+  { formOption: 'hasFurPadding', label: 'Fur Padding' },
+  { formOption: 'hasLindwurmCloak', label: 'Lindwurm Cloak' },
+].map(el => ({
+  ...el,
+  id: uniqueId(),
+}));
 
 const App = props => {
   const [state, setState] = useImmerState({
@@ -28,27 +46,56 @@ const App = props => {
     logs: [],
     selectedWeapon: null,
     selectedCharacter: null,
+    selectedDmgMults: [],
     savedResults: [],
+    startingPoint: null,
   });
-  const { avgHits, probability, logs, selectedWeapon, selectedCharacter, savedResults } = state;
+
+  const {
+    avgHits,
+    probability,
+    logs,
+    selectedWeapon,
+    selectedCharacter,
+    selectedDmgMults,
+    savedResults,
+    startingPoint,
+  } = state;
+
   const {
     values,
     setFieldValue,
     setSubmitting,
     isSubmitting,
-    isValid,
     handleChange,
-    handleSubmit,
+    setTouched,
+    validateForm,
   } = props;
-  console.log(props);
 
-  const onCharacterSelect = selectedCharacter => {
-    setState({ selectedCharacter });
-    if (!selectedCharacter) return;
+  const getAvgValue = el => (values.useRounds ? el.avgRounds : el.avgHits);
+  const sortResultsFn = (a, b) =>
+    values.useRounds ? b.avgRounds - a.avgRounds : b.avgHits - a.avgHits;
+
+  const maxStartingPoint = React.useMemo(() => {
+    const maximumHitsWeapon = maxBy(savedResults, getAvgValue);
+    return maximumHitsWeapon?.id;
+  }, [savedResults, values.useRounds]);
+  const startingPointValue =
+    !isEmpty(savedResults) &&
+      savedResults.find(el => el.id === (startingPoint || maxStartingPoint)) |> getAvgValue;
+
+  const setAllTouched = () => {
+    const allTouched = Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: true }), {});
+    setTouched(allTouched, false);
+  };
+
+  const onCharacterSelect = newSelectedCharacter => {
+    setState({ selectedCharacter: newSelectedCharacter });
+    if (!newSelectedCharacter) return;
     const availableOptions = Object.keys(values);
-    Object.keys(selectedCharacter.value)
+    Object.keys(newSelectedCharacter.value)
       .filter(key => availableOptions.includes(key))
-      .forEach(key => setFieldValue(key, selectedCharacter.value[key], false));
+      .forEach(key => setFieldValue(key, newSelectedCharacter.value[key], false));
   };
 
   const onColossusChange = e => {
@@ -60,15 +107,54 @@ const App = props => {
     handleChange(e);
   };
 
-  const onWeaponSelect = selectedWeapon => {
-    setState({ selectedWeapon });
-    if (!selectedWeapon) return;
+  const onLWCloakChange = e => {
+    if (values.hasLindwurmCloak) {
+      setFieldValue('startArmor', values.startArmor - 40);
+    } else {
+      setFieldValue('startArmor', values.startArmor + 40);
+    }
+    handleChange(e);
+  };
+
+  const onWeaponSelect = newSelectedWeapon => {
+    if (!newSelectedWeapon) {
+      setFieldValue('attacksPerRound', 1, false);
+      setState({ selectedWeapon: newSelectedWeapon, selectedDmgMults: [] });
+      return;
+    }
+
     const availableOptions = Object.keys(values);
-    Object.keys(selectedWeapon.value)
-      .filter(key => availableOptions.includes(key))
-      .forEach(key => setFieldValue(key, selectedWeapon.value[key], false));
     setFieldValue('hasDuelist', false, false);
     setFieldValue('hasDoubleGrip', false, false);
+    const canClearCurrentDmgMult = newSelectedWeapon.value.dmgMult !== 1;
+
+    if (canClearCurrentDmgMult) {
+      setState({ selectedWeapon: newSelectedWeapon, selectedDmgMults: [] });
+
+      Object.keys(newSelectedWeapon.value)
+        .filter(weaponOption => availableOptions.includes(weaponOption))
+        .forEach(weaponOption =>
+          setFieldValue(weaponOption, newSelectedWeapon.value[weaponOption], false)
+        );
+    } else {
+      setState({ selectedWeapon: newSelectedWeapon });
+
+      Object.keys(newSelectedWeapon.value)
+        .filter(weaponOption => availableOptions.includes(weaponOption))
+        .filter(weaponOption => weaponOption !== 'dmgMult')
+        .forEach(weaponOption =>
+          setFieldValue(weaponOption, newSelectedWeapon.value[weaponOption], false)
+        );
+    }
+  };
+
+  const onDmgMultSelect = newSelectedDmgMult => {
+    setState({ selectedDmgMults: newSelectedDmgMult });
+    if (isEmpty(newSelectedDmgMult)) {
+      return setFieldValue('dmgMult', 1, false);
+    }
+    const combinedDmgMult = newSelectedDmgMult.reduce((acc, { value }) => acc * value, 1);
+    setFieldValue('dmgMult', combinedDmgMult, false);
   };
 
   const onDoubleGripChange = e => {
@@ -109,18 +195,39 @@ const App = props => {
     handleChange(e);
   };
 
-  const onCalculateAll = async e => {
-    handleSubmit(e);
-    if (!isValid) {
-      return setSubmitting(false);
-    }
+  const onCompareModeChange = e => {
+    localStorage.setItem('isCompareMode', e.target.checked);
+    handleChange(e);
+  };
 
-    const filteredValues = omit(values, ['hasDoubleGrip', 'hasDuelist']);
-    const savedResults = weaponsList
+  const onClearSavedResults = () => setState({ savedResults: [], startingPoint: null });
+  const onSortSavedResults = () => setState({ savedResults: savedResults.sort(sortResultsFn) });
+  const onRemoveResult = id => () =>
+    setState({
+      savedResults: savedResults.filter(el => el.id !== id),
+      startingPoint: startingPoint === id ? null : startingPoint,
+    });
+  const onSetStartingPoint = id => () => setState({ startingPoint: id });
+  const onRemoveStartingPoint = () => setState({ startingPoint: null });
+
+  const onCalculateAll = async () => {
+    setAllTouched();
+    const errors = await validateForm();
+    if (!isEmpty(errors)) return;
+
+    setSubmitting(true);
+    const filteredValues = omit(values, [
+      'hasDoubleGrip',
+      'hasDuelist',
+      'hasPuncture',
+      'hasSplitMan',
+    ]);
+    const newSavedResults = weaponsList
       .filter(el => el.isIncludedToAllCalc)
       .map(el => ({
         ...filteredValues,
         ...el,
+        dmgMult: values.dmgMult,
         weaponLabel: el.name,
         countOfTests: 5000,
       }))
@@ -135,54 +242,62 @@ const App = props => {
         }
         return el;
       })
-      .map(options => ({
-        weaponLabel: options.weaponLabel,
-        avgHits: round(getAverageStats(options).avgHits, 2),
-        hasDoubleGrip: options.hasDoubleGrip,
-      }));
+      .map(options => {
+        const badgeOptions = badgeList.reduce(
+          (acc, { formOption }) => ({ ...acc, [formOption]: options[formOption] }),
+          {}
+        );
+        const stats = getAverageStats(options);
+        return {
+          ...badgeOptions,
+          id: uniqueId(),
+          weaponLabel: options.weaponLabel,
+          avgHits: round(stats.avgHits, 2),
+          avgRounds: round(stats.avgHits / options.attacksPerRound, 2),
+          attacksPerRound: options.attacksPerRound,
+          dmgMult: options.dmgMult,
+        };
+      });
 
-    savedResults.sort((a, b) => b.avgHits - a.avgHits);
-
+    newSavedResults.sort(sortResultsFn);
     setSubmitting(false);
-    setState({ savedResults });
+    setState({ savedResults: newSavedResults });
   };
 
-  const onClearSavedResults = () => setState({ savedResults: [] });
+  const onSubmit = async e => {
+    e.preventDefault();
+    setAllTouched();
+    const errors = await validateForm();
+    if (!isEmpty(errors)) return;
 
-  const onSubmit = e => {
-    handleSubmit(e);
-    if (!isValid) {
-      return setSubmitting(false);
-    }
-
+    setSubmitting(true);
     if (values.isTestMode) {
-      const { hitsToKill, logs } = getStats(values);
-      console.log(logs);
-
+      const stats = getStats(values);
       setState({
-        avgHits: hitsToKill,
-        logs,
+        avgHits: stats.hitsToKill,
+        logs: stats.logs,
       });
-    } else if (values.isSaveMode) {
-      const { avgHits, probability } = getAverageStats(values);
+    } else {
+      const stats = getAverageStats(values);
+      const defaultWeaponLabel = `Dmg ${values.minDmg}-${values.maxDmg}`;
+      const badgeOptions = badgeList.reduce(
+        (acc, { formOption }) => ({ ...acc, [formOption]: values[formOption] }),
+        {}
+      );
       const newResult = {
-        weaponLabel: selectedWeapon?.label || '?',
-        avgHits: round(avgHits, 2),
-        hasDoubleGrip: values.hasDoubleGrip,
-        hasDuelist: values.hasDuelist,
+        id: uniqueId(),
+        weaponLabel: selectedWeapon?.label || defaultWeaponLabel,
+        avgHits: round(stats.avgHits, 2),
+        avgRounds: round(stats.avgHits / values.attacksPerRound, 2),
+        attacksPerRound: values.attacksPerRound,
+        dmgMult: values.dmgMult,
+        ...badgeOptions,
       };
 
       setState({
-        avgHits: round(avgHits, 2),
+        avgHits: round(stats.avgHits, 2),
         savedResults: savedResults.concat(newResult),
-        probability,
-      });
-    } else {
-      const { avgHits, probability } = getAverageStats(values);
-
-      setState({
-        avgHits: round(avgHits, 2),
-        probability,
+        probability: stats.probability,
       });
     }
 
@@ -190,8 +305,11 @@ const App = props => {
   };
 
   React.useEffect(() => {
-    const [heavyBro] = characterOptions;
-    onCharacterSelect(heavyBro);
+    const orcWarrior = characterOptions.find(el => el.label === 'Orc Warrior');
+    onCharacterSelect(orcWarrior);
+
+    const isCompareMode = localStorage.getItem('isCompareMode') === 'true';
+    setFieldValue('isCompareMode', isCompareMode, false);
   }, []);
 
   return (
@@ -199,7 +317,7 @@ const App = props => {
       <div className="container app__container">
         <div className="pt-10 pb-30">
           <div className="d-flex align-items-center justify-content-between mb-20">
-            <h1 className="mb-0">Battle Brothers "HitsToKill" Calculator</h1>
+            <h1 className="mb-0">Battle Brothers &quot;HitsToKill&quot; Calculator</h1>
             <div>
               <div>v1.0.1</div>
               <a
@@ -212,12 +330,13 @@ const App = props => {
             </div>
           </div>
 
-          <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit} className="mb-25">
             <h4>Character</h4>
             <div className="row mb-10">
               <div className="col-3">
                 <div>Character Preset</div>
                 <Select
+                  instanceId={1}
                   value={selectedCharacter}
                   options={characterOptions}
                   onChange={onCharacterSelect}
@@ -259,13 +378,19 @@ const App = props => {
                 )}
               </div>
               <div className="col-3">
-                {values.hasNimble && (
+                {values.hasNimble ? (
                   <Field
                     component={CommonField}
                     name="totalFtg"
                     label="Total Fatigue"
                     type="number"
                   />
+                ) : (
+                  <Field name="hasLindwurmCloak">
+                    {({ field }) => (
+                      <Checkbox field={field} label="Lindwurm Cloak" onChange={onLWCloakChange} />
+                    )}
+                  </Field>
                 )}
               </div>
             </div>
@@ -291,6 +416,21 @@ const App = props => {
                   <i className="fa fa-question-circle app__tooltip ml-5"></i>
                 </OverlayTrigger>
               </div>
+              <div className="col-3">
+                <Field component={Checkbox} name="hasBoneArmor" label="Bone Plating" />
+                <OverlayTrigger
+                  trigger={['hover', 'focus']}
+                  placement="left"
+                  overlay={
+                    <Popover>
+                      Completely absorbs the first hit of every combat encounter which doesn&apos;t
+                      ignore armor
+                    </Popover>
+                  }
+                >
+                  <i className="fa fa-question-circle app__tooltip ml-5"></i>
+                </OverlayTrigger>
+              </div>
             </div>
 
             <h4>Weapon</h4>
@@ -298,6 +438,7 @@ const App = props => {
               <div className="col-3">
                 <div>Weapon Preset</div>
                 <Select
+                  instanceId={2}
                   value={selectedWeapon}
                   onChange={onWeaponSelect}
                   options={weaponOptions}
@@ -341,6 +482,39 @@ const App = props => {
             </div>
 
             <div className="row mb-15">
+              <div className="col-6">
+                <div>Dmg Multiplier Preset</div>
+                <Select
+                  instanceId={3}
+                  value={selectedDmgMults}
+                  onChange={onDmgMultSelect}
+                  options={dmgMultiplierList}
+                  placeholder="type for search"
+                  isClearable
+                  isMulti
+                />
+              </div>
+              <div className="col-3">
+                <Field
+                  component={CommonField}
+                  name="dmgMult"
+                  label="Dmg Multiplier"
+                  type="number"
+                />
+              </div>
+              {values.isCompareMode && (
+                <div className="col-3">
+                  <Field
+                    component={CommonField}
+                    name="attacksPerRound"
+                    label="Attacks Per Round"
+                    type="number"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="row mb-15">
               <div className="col-3">
                 <Field name="hasDoubleGrip">
                   {({ field }) => (
@@ -355,11 +529,43 @@ const App = props => {
                   )}
                 </Field>
               </div>
+              <div className="col-3">
+                <Field
+                  component={Checkbox}
+                  name="hasPuncture"
+                  label="Puncture"
+                  disabled={values.hasBatter || values.hasSplitMan || values.hasTHFlail}
+                />
+              </div>
+              <div className="col-3">
+                <Field
+                  component={Checkbox}
+                  name="hasTHFlail"
+                  label="Three Headed Flail"
+                  disabled={values.hasBatter || values.hasSplitMan || values.hasPuncture}
+                />
+                <OverlayTrigger
+                  trigger={['hover', 'focus']}
+                  placement="left"
+                  overlay={
+                    <Popover>
+                      Will make 3 separate strikes for 1/3 of the weapon&apos;s damage each
+                    </Popover>
+                  }
+                >
+                  <i className="fa fa-question-circle app__tooltip ml-5"></i>
+                </OverlayTrigger>
+              </div>
             </div>
 
             <div className="row mb-30">
               <div className="col-3">
-                <Field component={Checkbox} name="hasSplitMan" label="Split Man" />
+                <Field
+                  component={Checkbox}
+                  name="hasSplitMan"
+                  label="Split Man"
+                  disabled={values.hasBatter || values.hasPuncture || values.hasTHFlail}
+                />
               </div>
               <div className="col-3">
                 <Field component={Checkbox} name="hasChop" label="Chop" />
@@ -372,7 +578,12 @@ const App = props => {
                 </OverlayTrigger>
               </div>
               <div className="col-3">
-                <Field component={Checkbox} name="hasBatter" label="Batter" />
+                <Field
+                  component={Checkbox}
+                  name="hasBatter"
+                  label="Batter"
+                  disabled={values.hasPuncture || values.hasSplitMan || values.hasTHFlail}
+                />
                 <OverlayTrigger
                   trigger={['hover', 'focus']}
                   placement="right"
@@ -416,15 +627,40 @@ const App = props => {
                   label="Test Mode"
                   onChange={onTestModeChange}
                 />
-              </div>
-              <div className="col-3">
-                <Field component={Checkbox} name="isSaveMode" label="Save Results" />
                 <OverlayTrigger
                   trigger={['hover', 'focus']}
                   placement="right"
                   overlay={
                     <Popover>
-                      If active, press Calculate on different weapons to compare them.
+                      Allows to check the correctness of calculations, by running only 1 test and
+                      look how exactly calculation performed
+                    </Popover>
+                  }
+                >
+                  <i className="fa fa-question-circle app__tooltip ml-5"></i>
+                </OverlayTrigger>
+              </div>
+              <div className="col-3">
+                <Field
+                  component={Checkbox}
+                  name="isCompareMode"
+                  label="Compare Mode"
+                  onChange={onCompareModeChange}
+                />
+                <OverlayTrigger
+                  trigger={['hover', 'focus']}
+                  placement="right"
+                  overlay={
+                    <Popover>
+                      <span>If active, the </span>
+                      <span className="badge badge-success">green badges</span>
+                      <span> appears in All Calcs. </span>
+                      <span className="badge badge-success">2x</span>
+                      <span> badge means that weapon 2x stronger than weapon with </span>
+                      <span className="badge badge-success">1x</span>
+                      <span> badge.</span>
+                      <span> You can set Starting point by clicking at </span>
+                      <i className="fa fa-balance-scale blue"></i>
                     </Popover>
                   }
                 >
@@ -445,22 +681,14 @@ const App = props => {
               >
                 Calculate Some Weapons
               </button>
-              {!isEmpty(savedResults) && (
-                <button
-                  type="button"
-                  className="btn btn-outline-primary ml-10"
-                  onClick={onClearSavedResults}
-                >
-                  Clear Results
-                </button>
-              )}
             </div>
           </form>
 
           <div className="row">
-            <div className="col-6">
-              {avgHits && <div className="mt-20">Avg Hits: {avgHits}</div>}
-              {!isEmpty(probability) && (
+            <div className="col-3">
+              <h4 className="app__last-calc-title">Last Calculation</h4>
+              {avgHits && <div>Avg Hits: {avgHits}</div>}
+              {!values.isTestMode && !isEmpty(probability) && (
                 <div className="mt-20">
                   {probability.map(({ hitsToKill, chance }, i) => (
                     <div key={i}>
@@ -486,16 +714,91 @@ const App = props => {
                 </div>
               )}
             </div>
-            <div className="col-6">
-              {savedResults.map((el, i) => (
-                <div className="app__saved-result" key={i}>
-                  <span>
-                    <b>{el.weaponLabel}</b>: {el.avgHits}
-                  </span>
-                  {el.hasDoubleGrip && (
-                    <span className="badge badge-primary ml-10">Double Grip</span>
-                  )}
-                  {el.hasDuelist && <span className="badge badge-primary ml-10">Duelist</span>}
+            <div className="col-9">
+              <div className="d-flex align-items-center mb-10">
+                <h4 className="mb-0">All Calculations</h4>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary ml-10"
+                  onClick={onClearSavedResults}
+                >
+                  Clear Results
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary ml-10"
+                  onClick={onSortSavedResults}
+                >
+                  Sort Results
+                </button>
+                {values.isCompareMode && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-sm btn-outline-primary ml-10"
+                      onClick={onRemoveStartingPoint}
+                    >
+                      Remove Starting Point
+                    </button>
+                    <div className="ml-10">
+                      <Field component={Checkbox} name="useRounds" label="Use Rounds" />
+                      <OverlayTrigger
+                        trigger={['hover', 'focus']}
+                        placement="left"
+                        overlay={
+                          <Popover>
+                            Use AvgRounds intead of AvgHits. It just divides avgHits by 2 for most
+                            one-handed weapons, and by 3 for daggers.
+                          </Popover>
+                        }
+                      >
+                        <i className="fa fa-question-circle app__tooltip ml-5"></i>
+                      </OverlayTrigger>
+                    </div>
+                  </>
+                )}
+              </div>
+              {savedResults.map(el => (
+                <div className="app__saved-result" key={el.id}>
+                  <div className="d-flex align-items-center">
+                    <span className="mr-5">
+                      <b>{el.weaponLabel}</b>: {getAvgValue(el)}
+                    </span>
+                    {values.isCompareMode && (
+                      <span className="badge badge-success ml-10">
+                        {round(startingPointValue / getAvgValue(el), 1)}x
+                      </span>
+                    )}
+                    {el.dmgMult !== 1 && (
+                      <span className="badge badge-primary ml-10">DmgMult {el.dmgMult}</span>
+                    )}
+                    {values.useRounds && el.attacksPerRound !== 1 && (
+                      <span className="badge badge-primary ml-10">
+                        {el.attacksPerRound} Attacks
+                      </span>
+                    )}
+                    {badgeList.map(
+                      badge =>
+                        el[badge.formOption] && (
+                          <span className="badge badge-primary ml-10" key={badge.id}>
+                            {badge.label}
+                          </span>
+                        )
+                    )}
+                  </div>
+                  <div className="app__sr-icons-container">
+                    <i
+                      className="fa fa-balance-scale clickable ml-5 blue app__sr-icon"
+                      title="Set Starting Point"
+                      onClick={onSetStartingPoint(el.id)}
+                    ></i>
+                    <i
+                      className="fa fa-times clickable ml-5 blue app__sr-icon"
+                      title="Remove Row"
+                      onClick={onRemoveResult(el.id)}
+                    ></i>
+                    <div className="app__saved-result-bg"></div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -528,9 +831,11 @@ export default withFormik({
         const { minDmg } = this.parent;
         return minDmg <= maxDmg;
       }),
-    armorPiercingPercent: number().min(0).max(2).required('Required'),
+    armorPiercingPercent: number().min(0).max(1).required('Required'),
     vsArmorPercent: number().min(0.1).max(4).required('Required'),
     chanceToHitHead: number().min(0).max(1).required('Required'),
+    dmgMult: number().min(0).max(3).required('Required'),
+    attacksPerRound: number().oneOf([1, 2, 3]).required('Required'),
     hasSteelBrow: boolean(),
     hasBattleForged: boolean(),
     hasNimble: boolean(),
@@ -539,6 +844,7 @@ export default withFormik({
       .max(500)
       .when('hasNimble', (hasNimble, schema) => (hasNimble ? schema.required('Required') : schema)),
     hasNineLive: boolean(),
+    hasBoneArmor: boolean(),
     hasColossus: boolean(),
     hasDoubleGrip: boolean(),
     hasDuelist: boolean(),
@@ -547,6 +853,9 @@ export default withFormik({
     hasChop: boolean(),
     hasBatter: boolean(),
     hasFurPadding: boolean(),
+    hasLindwurmCloak: boolean(),
+    hasPuncture: boolean(),
+    hasTHFlail: boolean(),
   }),
 
   mapPropsToValues: () => ({
@@ -559,11 +868,14 @@ export default withFormik({
     armorPiercingPercent: 0.3,
     vsArmorPercent: 1,
     chanceToHitHead: 0.25,
+    dmgMult: 1,
+    attacksPerRound: 1,
     hasSteelBrow: false,
     hasNimble: false,
     hasBattleForged: false,
     totalFtg: 0,
     hasNineLive: false,
+    hasBoneArmor: false,
     hasColossus: false,
     hasDoubleGrip: false,
     hasDuelist: false,
@@ -572,7 +884,11 @@ export default withFormik({
     hasChop: false,
     hasBatter: false,
     hasFurPadding: false,
+    hasLindwurmCloak: false,
+    hasPuncture: false,
+    hasTHFlail: false,
     isTestMode: false,
-    isSaveMode: true,
+    isCompareMode: false,
+    useRounds: false,
   }),
 })(App);

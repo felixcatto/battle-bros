@@ -1,7 +1,6 @@
 import './Checkbox.scss';
 import React from 'react';
 
-
 const Checkbox = ({ field, form, ...props }) => (
   <label className="checkbox d-inline-flex align-items-center">
     <input

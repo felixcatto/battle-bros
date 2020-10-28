@@ -3,18 +3,23 @@ import { getRandomInRange } from './utils';
 import { commonCalc } from './strategyCommon';
 import { splitMan } from './strategySplitMan';
 import { batter } from './strategyBatter';
+import { puncture } from './strategyPuncture';
+import { thflail } from './strategyTHFlail';
 
 const configureStatsAfterHit = options => {
-  const { hasNimble, hasSplitMan, hasBatter } = options;
-
+  const { hasTHFlail, hasPuncture, hasSplitMan, hasBatter } = options;
   if (hasSplitMan) {
     return splitMan;
   }
-
   if (hasBatter) {
     return batter;
   }
-
+  if (hasPuncture) {
+    return puncture;
+  }
+  if (hasTHFlail) {
+    return thflail;
+  }
   return commonCalc;
 };
 
@@ -28,12 +33,15 @@ export const getStats = options => {
     vsArmorPercent,
     armorPiercingPercent,
     totalFtg,
-    hasSteelBrow,
     chanceToHitHead,
-    hasBattleForged,
-    hasNimble,
-    hasChop,
-    hasFurPadding,
+    dmgMult = 1,
+    hasSteelBrow = false,
+    hasBattleForged = false,
+    hasNimble = false,
+    hasChop = false,
+    hasFurPadding = false,
+    hasNineLive: initialHasNineLive = false,
+    hasBoneArmor: initialHasBoneArmor = false,
     getRandomNum = Math.random,
     shouldWriteLog = true,
   } = options;
@@ -45,9 +53,9 @@ export const getStats = options => {
     logs: [],
   };
 
-  const makeHit = (armor, helm, hp, hasNineLive) => {
+  const makeHit = (armor, helm, hp, hasNineLive, hasBoneArmor) => {
     const isHitToHead = getRandomNum() >= 1 - chanceToHitHead;
-    const dmgPerHit = getRandomInRange(minDmg, maxDmg);
+    const dmgPerHit = Math.floor(getRandomInRange(minDmg, maxDmg) * dmgMult);
     const afterHitOptions = {
       helm,
       armor,
@@ -59,6 +67,7 @@ export const getStats = options => {
       totalFtg,
       hasSteelBrow,
       hasNineLive,
+      hasBoneArmor,
       hasBattleForged,
       hasNimble,
       hasChop,
@@ -69,12 +78,12 @@ export const getStats = options => {
 
     if (shouldWriteLog) {
       stats.logs.push({
-        hp: afterHit.hp,
-        armor: afterHit.armor,
-        helm: afterHit.helm,
         struckPartName: afterHitOptions.struckPartName,
         armorDmg: afterHit.armorDmg,
         dmgToHp: afterHit.dmgToHp,
+        hp: afterHit.hp,
+        armor: afterHit.armor,
+        helm: afterHit.helm,
       });
     }
 
@@ -84,10 +93,16 @@ export const getStats = options => {
       return stats;
     }
 
-    return makeHit(afterHit.armor, afterHit.helm, afterHit.hp, afterHit.hasNineLive);
+    return makeHit(
+      afterHit.armor,
+      afterHit.helm,
+      afterHit.hp,
+      afterHit.hasNineLive,
+      afterHit.hasBoneArmor
+    );
   };
 
-  return makeHit(startArmor, startHelm, startHp, options.hasNineLive);
+  return makeHit(startArmor, startHelm, startHp, initialHasNineLive, initialHasBoneArmor);
 };
 
 export const getAverageStats = options => {

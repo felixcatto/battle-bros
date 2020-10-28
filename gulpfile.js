@@ -18,7 +18,7 @@ const paths = {
     dest: 'dist/public',
   },
   serverJs: {
-    src: ['*/**/*.js', '!node_modules/**', '!dist/**', '!client/**', '!__tests__/**'],
+    src: ['*/**/*.js', '!public/**', '!node_modules/**', '!dist/**', '!client/**', '!__tests__/**'],
     dest: 'dist',
   },
   client: {
@@ -79,6 +79,14 @@ const transpileServerJs = () =>
     .pipe(babel(babelConfig.server))
     .pipe(gulp.dest(paths.serverJs.dest));
 
+const transpileCC = () =>
+  gulp
+    .src(paths.client.components, {
+      since: gulp.lastRun(transpileCC),
+    })
+    .pipe(babel(babelConfig.server))
+    .pipe(gulp.dest(paths.client.dest));
+
 const trackChangesInDist = () => {
   const watcher = gulp.watch('dist/**/*');
   watcher
@@ -91,7 +99,7 @@ const watchManualRestart = async () => {
   const terminal = readline.createInterface({ input: process.stdin });
   terminal.on('line', input => {
     if (input === 'rs') {
-      series(transpileServerJs, restartServer)();
+      series(parallel(transpileServerJs, transpileCC), restartServer)();
     }
   });
 };
@@ -99,7 +107,9 @@ const watchManualRestart = async () => {
 const watch = async () => {
   gulp.watch(paths.public.src, series(copyPublicDev, restartServer, reloadBrowser));
   gulp.watch(paths.serverJs.src, series(transpileServerJs, restartServer));
-  gulp.watch(paths.client.components).on('change', series(waitBundleClient, reloadBrowser));
+  gulp
+    .watch(paths.client.components)
+    .on('change', series(parallel(waitBundleClient, transpileCC), reloadBrowser));
   gulp.watch(paths.client.css).on('change', series(waitBundleClient, reloadBrowser));
   trackChangesInDist();
 };
@@ -109,13 +119,14 @@ const dev = series(
   watchManualRestart,
   copyPublicDev,
   transpileServerJs,
+  transpileCC,
   startDevServer,
   startWebpack,
   startServer,
   watch
 );
 
-const build = series(clean, parallel(copyPublic, transpileServerJs), bundleClient);
+const build = series(clean, parallel(copyPublic, transpileServerJs, transpileCC, bundleClient));
 
 module.exports = {
   dev,

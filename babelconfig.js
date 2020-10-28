@@ -1,3 +1,5 @@
+const { generateScopedName, preprocessCss } = require('./lib/devUtils');
+
 module.exports = {
   client: {
     presets: [
@@ -38,6 +40,15 @@ module.exports = {
     plugins: [
       '@babel/plugin-proposal-optional-chaining',
       ['@babel/plugin-proposal-pipeline-operator', { proposal: 'minimal' }],
+      [
+        'css-modules-transform',
+        {
+          generateScopedName,
+          preprocessCss,
+          extensions: ['.scss'],
+          devMode: true,
+        },
+      ],
     ],
   },
 };

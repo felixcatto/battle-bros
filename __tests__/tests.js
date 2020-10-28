@@ -1,4 +1,4 @@
-import { getStats } from '../lib/math';
+import { getStats } from '../client/math';
 
 const getRandomFunc = () => {
   let i = 0;
@@ -105,7 +105,7 @@ test('hasFurPadding', () => {
 
   const stats = getStats(options);
   expect(stats.hitsToKill).toBe(2);
-  expect(stats.endHp).toBe(-38);
+  expect(stats.endHp).toBe(-37);
 });
 
 test('chanceToHitHead 0.5', () => {
@@ -314,4 +314,119 @@ test('hasSplitMan hasNineLive', () => {
   const stats = getStats(options);
   expect(stats.hitsToKill).toBe(3);
   expect(stats.endHp).toBe(-112);
+});
+
+test('hasSplitMan hasBoneArmor', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 120,
+    startHelm: 130,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasSplitMan: true,
+    hasBoneArmor: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-57);
+});
+
+test('hasPuncture', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 30,
+    maxDmg: 30,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasPuncture: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-20);
+});
+
+test('hasTHFlail', () => {
+  const options = {
+    startHp: 70,
+    startArmor: 100,
+    startHelm: 120,
+    minDmg: 60,
+    maxDmg: 60,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasTHFlail: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-22);
+});
+
+test('hasBoneArmor', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasBoneArmor: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(3);
+  expect(stats.endHp).toBe(-48);
+});
+
+test('hasBoneArmor ignored', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 120,
+    maxDmg: 120,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    hasBoneArmor: true,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-96);
+});
+
+test('dmgMult 1.25', () => {
+  const options = {
+    startHp: 60,
+    startArmor: 120,
+    startHelm: 120,
+    minDmg: 100,
+    maxDmg: 100,
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.25,
+    dmgMult: 1.25,
+    getRandomNum: getRandomFunc(),
+  };
+
+  const stats = getStats(options);
+  expect(stats.hitsToKill).toBe(2);
+  expect(stats.endHp).toBe(-102);
 });

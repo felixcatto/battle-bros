@@ -10,6 +10,11 @@
   src: url('/font/fa-solid-900.woff') format('woff');
 }
 
+@font-face {
+  font-family: UR;
+  src: url('/font/Ubuntu-Regular.ttf');
+}
+
 html {
   font-size: 16px;
 }
@@ -46,10 +51,12 @@ html {
   color: #6e7582 !important;
 }
 
+.blue {
+  color: #007bff;
+}
+
 .app {
-  font-family: 'Comic Sans MS', 'ubuntu';
-  /*background-image: url('/img/celebration.png');*/
-  /*background-image: url('/img/giena.jpeg');*/
+  font-family: UR;
   background-image: url('/img/bg4.jpg');
   background-position: 0 25%;
   background-size: cover;
@@ -82,12 +89,32 @@ html {
     color: #007bff;
     cursor: help;
   }
+  &__last-calc-title {
+    margin-bottom: 13px;
+  }
   &__saved-result {
+    position: relative;
     display: flex;
     align-items: center;
-    margin-bottom: 10px;
-    &:last-child {
-      margin-bottom: 0;
-    }
+    justify-content: space-between;
+    margin-left: -5px;
+    margin-right: -5px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  &__sr-icon {
+    padding: 7px 5px;
+  }
+  &__saved-result-bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    pointer-events: none;
+  }
+  &__sr-icons-container:hover &__saved-result-bg {
+    background: rgba(0, 0, 255, 0.1);
   }
 }

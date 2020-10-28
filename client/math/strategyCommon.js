@@ -1,6 +1,6 @@
 import { getBFDmgReduction, getNimbleDmgReduction, getHeadDmgMult } from './utils';
 
-const { max, min, floor, ceil } = Math;
+const { max, floor } = Math;
 
 export const commonCalc = options => {
   const {
@@ -12,6 +12,7 @@ export const commonCalc = options => {
     totalFtg,
     hasSteelBrow,
     hasNineLive,
+    hasBoneArmor,
     hasBattleForged,
     hasChop,
     hasFurPadding,
@@ -26,14 +27,26 @@ export const commonCalc = options => {
     ? getBFDmgReduction(armor, helm) * options.vsAPercent
     : options.vsAPercent;
   const APRPercent =
-    hasFurPadding && struckPartName !== 'head' ? options.APRPercent * 0.67 : options.APRPercent;
+    hasFurPadding && struckPartName !== 'head' ? options.APRPercent * 0.66 : options.APRPercent;
 
   const armorDmg = floor(dmg * vsAPercent);
   const newArmor = max(struckArmorPart - armorDmg, 0);
   const newArmorDmgReduction = floor(newArmor * 0.1);
-  const APRDmg = max(floor(dmg * APRPercent * nimbleDmgMult) - newArmorDmgReduction, 0);
 
   const isArmorDestroyed = newArmor === 0;
+  if (!isArmorDestroyed && hasBoneArmor) {
+    return {
+      hp,
+      armor,
+      helm,
+      armorDmg: 0,
+      dmgToHp: 0,
+      hasNineLive,
+      hasBoneArmor: false,
+    };
+  }
+
+  const APRDmg = max(floor(dmg * APRPercent * nimbleDmgMult) - newArmorDmgReduction, 0);
   const overflowDmg = floor((dmg - struckArmorPart) * nimbleDmgMult);
   const dmgToHp =
     (isArmorDestroyed ? max(APRDmg, overflowDmg) : APRDmg) |> (v => floor(v * headDmgMult));
@@ -46,9 +59,10 @@ export const commonCalc = options => {
       hp: 8,
       armor: newBodyArmor,
       helm: newHelm,
-      hasNineLive: false,
       armorDmg,
       dmgToHp,
+      hasNineLive: false,
+      hasBoneArmor,
     };
   }
 
@@ -56,8 +70,9 @@ export const commonCalc = options => {
     hp: newHp,
     armor: newBodyArmor,
     helm: newHelm,
-    hasNineLive,
     armorDmg,
     dmgToHp,
+    hasNineLive,
+    hasBoneArmor,
   };
 };
