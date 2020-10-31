@@ -261,7 +261,7 @@ const App = props => {
 
     newSavedResults.sort(sortResultsFn);
     setSubmitting(false);
-    setState({ savedResults: newSavedResults });
+    setState({ savedResults: newSavedResults, startingPoint: null });
   };
 
   const onSubmit = async e => {
@@ -787,11 +787,13 @@ const App = props => {
                     )}
                   </div>
                   <div className="app__sr-icons-container">
-                    <i
-                      className="fa fa-balance-scale clickable ml-5 blue app__sr-icon"
-                      title="Set Starting Point"
-                      onClick={onSetStartingPoint(el.id)}
-                    ></i>
+                    {values.isCompareMode && (
+                      <i
+                        className="fa fa-balance-scale clickable ml-5 blue app__sr-icon"
+                        title="Set Starting Point"
+                        onClick={onSetStartingPoint(el.id)}
+                      ></i>
+                    )}
                     <i
                       className="fa fa-times clickable ml-5 blue app__sr-icon"
                       title="Remove Row"

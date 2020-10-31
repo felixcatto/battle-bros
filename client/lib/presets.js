@@ -341,6 +341,8 @@ const rawWeaponsList = [
     chanceToHitHead: 0.35,
     attacksPerRound: 2,
     hasTHFlail: true,
+    isIncludedToAllCalc: true,
+    useDoubleGrip: true,
   },
   {
     name: 'Two-handed Flail',
@@ -392,8 +394,6 @@ const rawWeaponsList = [
     armorPiercingPercent: 0.25,
     vsArmorPercent: 1.2,
     attacksPerRound: 2,
-    isIncludedToAllCalc: true,
-    useDoubleGrip: true,
   },
   {
     name: 'Crypt Cleaver (Ancient Dead)',
