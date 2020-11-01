@@ -72,6 +72,7 @@ const copyPublicDev = () =>
   gulp
     .src(paths.public.src, { since: gulp.lastRun(copyPublicDev) })
     .pipe(gulp.symlink(paths.public.dest, { overwrite: false }));
+const copyMisc = () => gulp.src('package.json').pipe(gulp.dest('dist'));
 
 const transpileServerJs = () =>
   gulp
@@ -116,6 +117,7 @@ const watch = async () => {
 
 const dev = series(
   clean,
+  copyMisc,
   watchManualRestart,
   copyPublicDev,
   transpileServerJs,
@@ -126,7 +128,11 @@ const dev = series(
   watch
 );
 
-const build = series(clean, parallel(copyPublic, transpileServerJs, transpileCC, bundleClient));
+const build = series(
+  clean,
+  copyMisc,
+  parallel(copyPublic, transpileServerJs, transpileCC, bundleClient)
+);
 
 module.exports = {
   dev,

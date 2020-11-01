@@ -8,17 +8,19 @@ export const commonCalc = options => {
     armor,
     helm,
     struckPartName,
-    dmg,
     totalFtg,
     hasSteelBrow,
     hasNineLive,
-    hasBoneArmor,
     hasBattleForged,
-    hasChop,
-    hasFurPadding,
     hasNimble,
+    hasChop,
+    hasBoneArmor,
+    hasFurPadding,
+    hasHornPlate,
   } = options;
 
+  const dmg =
+    hasHornPlate && struckPartName === 'body' ? Math.floor(options.dmg * 0.9) : options.dmg;
   const struckArmorPart = struckPartName === 'head' ? helm : armor;
   const headDmgMult = getHeadDmgMult(struckPartName, hasSteelBrow, hasChop);
   const nimbleDmgMult = hasNimble ? getNimbleDmgReduction(totalFtg) : 1;
@@ -27,14 +29,14 @@ export const commonCalc = options => {
     ? getBFDmgReduction(armor, helm) * options.vsAPercent
     : options.vsAPercent;
   const APRPercent =
-    hasFurPadding && struckPartName !== 'head' ? options.APRPercent * 0.66 : options.APRPercent;
+    hasFurPadding && struckPartName === 'body' ? options.APRPercent * 0.66 : options.APRPercent;
 
   const armorDmg = floor(dmg * vsAPercent);
   const newArmor = max(struckArmorPart - armorDmg, 0);
   const newArmorDmgReduction = floor(newArmor * 0.1);
 
   const isArmorDestroyed = newArmor === 0;
-  if (!isArmorDestroyed && hasBoneArmor) {
+  if (!isArmorDestroyed && hasBoneArmor && struckPartName === 'body') {
     return {
       hp,
       armor,

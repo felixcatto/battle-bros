@@ -9,6 +9,7 @@ import { weaponsList, characterList, dmgMultiplierList } from '../lib/presets';
 import { getAverageStats, getStats } from '../math';
 import { getNimbleDmgReduction, getBFDmgReduction } from '../math/utils';
 import Checkbox from './Checkbox';
+import { version } from '../../package.json';
 import '../css/index.scss';
 
 const CommonField = ({ field, ...props }) => (
@@ -34,6 +35,7 @@ const badgeList = [
   { formOption: 'hasBoneArmor', label: 'Bone Plating' },
   { formOption: 'hasFurPadding', label: 'Fur Padding' },
   { formOption: 'hasLindwurmCloak', label: 'Lindwurm Cloak' },
+  { formOption: 'hasHornPlate', label: 'Horn Plate' },
 ].map(el => ({
   ...el,
   id: uniqueId(),
@@ -319,7 +321,7 @@ const App = props => {
           <div className="d-flex align-items-center justify-content-between mb-20">
             <h1 className="mb-0">Battle Brothers &quot;HitsToKill&quot; Calculator</h1>
             <div>
-              <div>v1.0.1</div>
+              <div>v{version}</div>
               <a
                 href="https://github.com/felixcatto/battle-bros"
                 target="_blank"
@@ -355,49 +357,9 @@ const App = props => {
               </div>
             </div>
 
-            <div className="app__mix-row row align-items-center mb-10">
+            <div className="row mb-10">
               <div className="col-3">
                 <Field component={Checkbox} name="hasSteelBrow" label="Steel Brow" />
-              </div>
-              <div className="col-3 d-flex align-items-center">
-                <Field component={Checkbox} name="hasBattleForged" label="Battle Forged" />
-                {values.hasBattleForged &&
-                  isNumber(values.startArmor) &&
-                  isNumber(values.startHelm) && (
-                    <div className="app__perk-value ml-10">
-                      {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
-                    </div>
-                  )}
-              </div>
-              <div className="col-3 d-flex align-items-center">
-                <Field component={Checkbox} name="hasNimble" label="Nimble" />
-                {values.hasNimble && (
-                  <div className="app__perk-value ml-10">
-                    {round(getNimbleDmgReduction(values.totalFtg), 2)}
-                  </div>
-                )}
-              </div>
-              <div className="col-3">
-                {values.hasNimble ? (
-                  <Field
-                    component={CommonField}
-                    name="totalFtg"
-                    label="Total Fatigue"
-                    type="number"
-                  />
-                ) : (
-                  <Field name="hasLindwurmCloak">
-                    {({ field }) => (
-                      <Checkbox field={field} label="Lindwurm Cloak" onChange={onLWCloakChange} />
-                    )}
-                  </Field>
-                )}
-              </div>
-            </div>
-
-            <div className="row mb-30">
-              <div className="col-3">
-                <Field component={Checkbox} name="hasNineLive" label="Nine Live" />
               </div>
               <div className="col-3">
                 <Field name="hasColossus">
@@ -406,6 +368,12 @@ const App = props => {
                   )}
                 </Field>
               </div>
+              <div className="col-3">
+                <Field component={Checkbox} name="hasNineLive" label="Nine Live" />
+              </div>
+            </div>
+
+            <div className="row">
               <div className="col-3">
                 <Field component={Checkbox} name="hasFurPadding" label="Fur Padding" />
                 <OverlayTrigger
@@ -430,6 +398,54 @@ const App = props => {
                 >
                   <i className="fa fa-question-circle app__tooltip ml-5"></i>
                 </OverlayTrigger>
+              </div>
+              <div className="col-3">
+                <Field component={Checkbox} name="hasHornPlate" label="Horn Plate" />
+                <OverlayTrigger
+                  trigger={['hover', 'focus']}
+                  placement="right"
+                  overlay={<Popover>Reduces any melee damage to the body by -10%</Popover>}
+                >
+                  <i className="fa fa-question-circle app__tooltip ml-5"></i>
+                </OverlayTrigger>
+              </div>
+              <div className="col-3">
+                <Field name="hasLindwurmCloak">
+                  {({ field }) => (
+                    <Checkbox field={field} label="Lindwurm Cloak" onChange={onLWCloakChange} />
+                  )}
+                </Field>
+              </div>
+            </div>
+
+            <div className="app__mix-row row align-items-center mb-10">
+              <div className="col-3 d-flex align-items-center">
+                <Field component={Checkbox} name="hasBattleForged" label="Battle Forged" />
+                {values.hasBattleForged &&
+                  isNumber(values.startArmor) &&
+                  isNumber(values.startHelm) && (
+                    <div className="app__perk-value ml-10">
+                      {round(getBFDmgReduction(values.startArmor, values.startHelm), 2)}
+                    </div>
+                  )}
+              </div>
+              <div className="col-3 d-flex align-items-center">
+                <Field component={Checkbox} name="hasNimble" label="Nimble" />
+                {values.hasNimble && (
+                  <div className="app__perk-value ml-10">
+                    {round(getNimbleDmgReduction(values.totalFtg), 2)}
+                  </div>
+                )}
+              </div>
+              <div className="col-3">
+                {values.hasNimble && (
+                  <Field
+                    component={CommonField}
+                    name="totalFtg"
+                    label="Total Fatigue"
+                    type="number"
+                  />
+                )}
               </div>
             </div>
 
@@ -481,7 +497,7 @@ const App = props => {
               </div>
             </div>
 
-            <div className="row mb-15">
+            <div className="row mb-10">
               <div className="col-6">
                 <div>Dmg Multiplier Preset</div>
                 <Select
@@ -747,7 +763,7 @@ const App = props => {
                         placement="left"
                         overlay={
                           <Popover>
-                            Use AvgRounds intead of AvgHits. It just divides avgHits by 2 for most
+                            Use AvgRounds intead of AvgHits. It just divides avgHits by 2 for
                             one-handed weapons, and by 3 for daggers.
                           </Popover>
                         }
@@ -855,6 +871,7 @@ export default withFormik({
     hasChop: boolean(),
     hasBatter: boolean(),
     hasFurPadding: boolean(),
+    hasHornPlate: boolean(),
     hasLindwurmCloak: boolean(),
     hasPuncture: boolean(),
     hasTHFlail: boolean(),
@@ -886,6 +903,7 @@ export default withFormik({
     hasChop: false,
     hasBatter: false,
     hasFurPadding: false,
+    hasHornPlate: false,
     hasLindwurmCloak: false,
     hasPuncture: false,
     hasTHFlail: false,

@@ -124,6 +124,13 @@ const rawWeaponsList = [
   {
     name: 'Greatsword (split)',
     dmg: '85-100',
+    armorPiercingPercent: 0.3,
+    vsArmorPercent: 1,
+    chanceToHitHead: 0.3,
+  },
+  {
+    name: 'Greatsword (swing)',
+    dmg: '85-100',
     armorPiercingPercent: 0.25,
     vsArmorPercent: 1,
     chanceToHitHead: 0.3,
@@ -689,7 +696,6 @@ const rawCharacterList = [
     startArmor: 110,
     startHelm: 120,
     hasNimble: true,
-    hasColossus: true,
     totalFtg: 15,
   },
   {
@@ -837,10 +843,6 @@ const dmgMultiplierList = [
   {
     label: 'Throwing Mastery R3',
     value: 1.2,
-  },
-  {
-    label: 'Horn Plate',
-    value: 0.9,
   },
   {
     label: 'Indomitable',

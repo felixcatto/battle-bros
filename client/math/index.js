@@ -40,6 +40,7 @@ export const getStats = options => {
     hasNimble = false,
     hasChop = false,
     hasFurPadding = false,
+    hasHornPlate = false,
     hasNineLive: initialHasNineLive = false,
     hasBoneArmor: initialHasBoneArmor = false,
     getRandomNum = Math.random,
@@ -72,6 +73,7 @@ export const getStats = options => {
       hasNimble,
       hasChop,
       hasFurPadding,
+      hasHornPlate,
     };
 
     const afterHit = getStatsAfterHit(afterHitOptions);
