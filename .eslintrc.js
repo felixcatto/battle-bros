@@ -26,15 +26,12 @@ module.exports = {
     'object-curly-newline': 0,
     'operator-linebreak': 0,
     indent: 0,
+    'comma-dangle': 0,
     // # END
     'consistent-return': 0,
     'import/prefer-default-export': 0,
     'no-console': 1,
     'arrow-parens': ['error', 'as-needed'],
-    'comma-dangle': [
-      'error',
-      { objects: 'only-multiline', arrays: 'only-multiline', functions: 'ignore' },
-    ],
     'no-param-reassign': ['error', { props: false }],
     'no-return-assign': ['error', 'except-parens'],
     'max-len': ['error', { ignoreComments: true, code: 100 }],
