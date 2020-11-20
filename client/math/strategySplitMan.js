@@ -3,10 +3,21 @@ import { commonCalc } from './strategyCommon';
 export const splitMan = options => {
   const { struckPartName, dmg, hasBoneArmor, hasNineLive } = options;
 
+  if (hasBoneArmor && struckPartName === 'body') {
+    return {
+      hp: options.hp,
+      armor: options.armor,
+      helm: options.helm,
+      armorDmg: 0,
+      dmgToHp: 0,
+      hasNineLive,
+      hasBoneArmor: false,
+    };
+  }
+
   const afterFirstHit = commonCalc({
     ...options,
     hasNineLive: false,
-    hasBoneArmor: false,
   });
 
   const afterSecondHit = commonCalc({
@@ -20,23 +31,9 @@ export const splitMan = options => {
     hasBoneArmor: false,
   });
 
-  const isArmorDestroyed =
-    (struckPartName === 'head' && afterSecondHit.helm === 0) ||
-    (struckPartName === 'body' && afterSecondHit.armor === 0);
-  if (!isArmorDestroyed && hasBoneArmor) {
-    return {
-      hp: options.hp,
-      armor: options.armor,
-      helm: options.helm,
-      armorDmg: 0,
-      dmgToHp: 0,
-      hasNineLive,
-      hasBoneArmor: false,
-    };
-  }
-
   return {
     ...afterSecondHit,
+    hasBoneArmor,
     armorDmg: afterFirstHit.armorDmg + afterSecondHit.armorDmg,
     dmgToHp: afterFirstHit.dmgToHp + afterSecondHit.dmgToHp,
   };

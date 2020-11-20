@@ -34,9 +34,9 @@ export const batter = options => {
   const armorDmg = floor(dmg * vsAPercent);
   const newArmor = max(struckArmorPart - armorDmg, 0);
   const newArmorDmgReduction = floor(newArmor * 0.1);
-
   const isArmorDestroyed = newArmor === 0;
-  if (!isArmorDestroyed && hasBoneArmor && struckPartName === 'body') {
+
+  if (hasBoneArmor && struckPartName === 'body') {
     return {
       hp,
       armor,

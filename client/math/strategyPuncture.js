@@ -7,6 +7,7 @@ export const puncture = options => {
     armor: 0,
     helm: 0,
     hasSteelBrow: true,
+    hasBoneArmor: false,
   });
 
   return {

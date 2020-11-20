@@ -393,25 +393,6 @@ test('hasBoneArmor', () => {
   expect(stats.endHp).toBe(-48);
 });
 
-test('hasBoneArmor ignored', () => {
-  const options = {
-    startHp: 60,
-    startArmor: 120,
-    startHelm: 120,
-    minDmg: 120,
-    maxDmg: 120,
-    armorPiercingPercent: 0.3,
-    vsArmorPercent: 1,
-    chanceToHitHead: 0.25,
-    hasBoneArmor: true,
-    getRandomNum: getRandomFunc(),
-  };
-
-  const stats = getStats(options);
-  expect(stats.hitsToKill).toBe(2);
-  expect(stats.endHp).toBe(-96);
-});
-
 test('dmgMult 1.25', () => {
   const options = {
     startHp: 60,

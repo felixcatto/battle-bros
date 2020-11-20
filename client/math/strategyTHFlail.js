@@ -15,6 +15,7 @@ export const thflail = options => {
     armor: afterFirstHit.armor,
     helm: afterFirstHit.helm,
     hasNineLive: afterFirstHit.hasNineLive,
+    hasBoneArmor: afterFirstHit.hasBoneArmor,
     dmg: flailDmg,
   });
 
@@ -24,6 +25,7 @@ export const thflail = options => {
     armor: afterSecondHit.armor,
     helm: afterSecondHit.helm,
     hasNineLive: afterSecondHit.hasNineLive,
+    hasBoneArmor: afterSecondHit.hasBoneArmor,
     dmg: flailDmg,
   });
 

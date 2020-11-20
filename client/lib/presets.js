@@ -541,7 +541,7 @@ const rawWeaponsList = [
   {
     weaponLabel: 'Bundle of Throwing Axes',
     dmg: '25-40',
-    armorPiercingPercent: 0.25,
+    armorPiercingPercent: 0.3,
     vsArmorPercent: 1.1,
     chanceToHitHead: 0.3,
     attacksPerRound: 2,
@@ -549,7 +549,7 @@ const rawWeaponsList = [
   {
     weaponLabel: 'Bundle of Heavy Axes (barb)',
     dmg: '30-50',
-    armorPiercingPercent: 0.25,
+    armorPiercingPercent: 0.3,
     vsArmorPercent: 1.15,
     chanceToHitHead: 0.3,
     attacksPerRound: 2,
@@ -861,13 +861,13 @@ const rawCharacterList = [
   {
     characterName: 'Ifrit Medium',
     startHp: 220,
-    startArmor: 220,
+    startArmor: 110,
     startHelm: 0,
   },
   {
     characterName: 'Ifrit Large',
     startHp: 440,
-    startArmor: 440,
+    startArmor: 110,
     startHelm: 0,
   },
   {
