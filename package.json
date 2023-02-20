@@ -56,7 +56,7 @@
     "fastify": "^3.7.0",
     "fastify-static": "^3.3.0",
     "formik": "^2.2.1",
-    "immer": "^7.0.14",
+    "immer": "^9.0.6",
     "lodash": "^4.17.20",
     "pino-pretty": "^4.3.0",
     "react": "^17.0.1",
