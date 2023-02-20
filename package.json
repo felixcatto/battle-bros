@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "description": "privet medved",
   "engines": {
-    "node": "12"
+    "node": ">=16.0.0 <17.0.0"
   },
   "scripts": {
     "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then make build; fi",
@@ -62,7 +62,7 @@
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
-    "react-select": "^3.1.0",
+    "react-select": "^5.7.0",
     "yup": "^0.29.3"
   }
 }
