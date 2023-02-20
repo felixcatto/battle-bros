@@ -328,7 +328,7 @@ const App = props => {
   return (
     <div className="app">
       <div className="container app__container">
-        <div className="pt-10 pb-30">
+        <div className="pt-10 pb-25">
           <div className="d-flex align-items-center justify-content-between mb-20">
             <h1 className="mb-0">Battle Brothers &quot;HitsToKill&quot; Calculator</h1>
             <div>

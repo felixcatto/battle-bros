@@ -10,6 +10,9 @@ start-production:
 build:
 	NODE_ENV=production npx gulp build
 
+ssgBuild:
+	NODE_ENV=production npx gulp ssgBuild
+
 webpack-bundle:
 	NODE_ENV=production npx webpack
 
@@ -28,5 +31,6 @@ test:
 test-one-file:
 	npx jest --runInBand --watch $(arg)
 
-deploy:
-	git push -f heroku master
+prepare-deploy: ssgBuild
+	rm -rf	babelconfig.js	bin	client .eslint.babel.js	.eslintignore	.eslintrc.js	gulpfile.js	jest.config.js	lib	main	package.json	package-lock.json	public	README.md	__tests__	webpack.config.js
+	mv dist/* .

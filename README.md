@@ -2,4 +2,4 @@
 
 Battle Brothers 'HitsToKill' Calculator.
 
-[Live demo](http://bbbros.herokuapp.com)
+[Live demo](https://felixcatto.github.io/battle-bros/)
