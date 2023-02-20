@@ -7,12 +7,12 @@
   font-family: FontAwesome;
   font-style: normal;
   font-weight: 900;
-  src: url('/font/fa-solid-900.woff') format('woff');
+  src: url('../font/fa-solid-900.woff') format('woff');
 }
 
 @font-face {
   font-family: UR;
-  src: url('/font/Ubuntu-Regular.ttf');
+  src: url('../font/Ubuntu-Regular.ttf');
 }
 
 html {
@@ -57,7 +57,7 @@ html {
 
 .app {
   font-family: UR;
-  background-image: url('/img/bg4.jpg');
+  background-image: url('../img/bg4.jpg');
   background-position: 0 25%;
   background-size: cover;
   background-attachment: fixed;

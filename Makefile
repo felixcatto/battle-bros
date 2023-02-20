@@ -10,6 +10,9 @@ start-production:
 build:
 	NODE_ENV=production npx gulp build
 
+ssgBuild:
+	NODE_ENV=production npx gulp ssgBuild
+
 webpack-bundle:
 	NODE_ENV=production npx webpack
 

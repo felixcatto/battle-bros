@@ -3,13 +3,19 @@ const del = require('del');
 const webpack = require('webpack');
 const babel = require('gulp-babel');
 const EventEmitter = require('events');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const waitOn = require('wait-on');
 const readline = require('readline');
 const { makeServer, listen } = require('blunt-livereload');
 const webpackConfig = require('./webpack.config.js');
 const babelConfig = require('./babelconfig.js');
+const util = require('node:util');
+const { renderToString } = require('react-dom/server');
+const path = require('path');
+const fs = require('fs');
+const React = require('react');
 
+const asyncExec = util.promisify(exec);
 const { series, parallel } = gulp;
 
 const paths = {
@@ -105,6 +111,19 @@ const watchManualRestart = async () => {
   });
 };
 
+const unpackPublic = async () => asyncExec('mv dist/public/* dist');
+
+const renderHtml = async () => {
+  const App = require('./dist/client/components/App').default;
+  const pathPublic = path.resolve(__dirname, 'public');
+  const template = fs.readFileSync(path.resolve(__dirname, pathPublic, 'html/index.html'), 'utf8');
+  const renderedComponent = renderToString(React.createElement(App, null, null));
+  const html = template.replace('{{content}}', renderedComponent);
+  fs.writeFileSync('dist/index.html', html);
+};
+
+const cleanupBuild = async () => del(['dist/client', 'dist/public', 'dist/html']);
+
 const watch = async () => {
   gulp.watch(paths.public.src, series(copyPublicDev, restartServer, reloadBrowser));
   gulp.watch(paths.serverJs.src, series(transpileServerJs, restartServer));
@@ -134,7 +153,16 @@ const build = series(
   parallel(copyPublic, transpileServerJs, transpileCC, bundleClient)
 );
 
+const ssgBuild = series(
+  clean,
+  copyMisc,
+  parallel(copyPublic, bundleClient, transpileCC),
+  parallel(unpackPublic, renderHtml),
+  cleanupBuild
+);
+
 module.exports = {
   dev,
   build,
+  ssgBuild,
 };
